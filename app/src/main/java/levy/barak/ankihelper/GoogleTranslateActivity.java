@@ -9,6 +9,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -33,6 +35,8 @@ public class GoogleTranslateActivity extends Activity {
     public static final String GERMAN_WORD = "GERMAN_WORD";
     public static final String SHARED_IMAGE_SRC = "IMAGE_SRC";
     public static final String SHARED_IPA_SRC = "IPA_VALUE";
+
+    private boolean mIsInTranslate = false;
 
     public class WebAppInterface {
         private Context mContext;
@@ -64,6 +68,7 @@ public class GoogleTranslateActivity extends Activity {
 
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,8 +82,36 @@ public class GoogleTranslateActivity extends Activity {
         settings.setDomStorageEnabled(true);
 
         googleTranslateEditView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                Log.i("requestedUrl", request.getUrl().toString());
+                return true;
+            }
+
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                //Log.i("requestedUrl23", request.getUrl());
+
+                Log.i("requestedUrl2", request.getUrl().toString());
+//                if (request.getUrl().toString().startsWith("https://translate.google.com/translate_a/single")) {
+//                    if (!mIsInTranslate) {
+//                        mIsInTranslate = true;
+//                    }
+//                    else {
+//                        return new WebResourceResponse("", "", null);
+//                    }
+//                }
+
+                if (mIsInTranslate) {
+                    return new WebResourceResponse("", "", null);
+                }
+
+                return null;
+            }
+
             public void onPageFinished(WebView view, String url) {
-                googleTranslateEditView.evaluateJavascript(WebUtils.getJavascript(googleTranslateEditView.getContext(), "googleTranslate.js"), null);
+                mIsInTranslate = true;
+                //googleTranslateEditView.evaluateJavascript(WebUtils.getJavascript(googleTranslateEditView.getContext(), "googleTranslate.js"), null);
             }
         });
 

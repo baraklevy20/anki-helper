@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -65,9 +67,23 @@ public class ForvoActivity extends Activity {
         WebSettings settings = forvoWebView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
-        forvoWebView.setWebViewClient(new WebViewClient());
+        forvoWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString().toLowerCase();
+                String word = TranslateActivity.getGermanWordWithoutPrefix().toLowerCase();
 
-        forvoWebView.loadUrl("http://www.forvo.com/word/de/" + TranslateActivity.getGermanWordWithoutPrefix());
+                Log.i("requestedUrl", request.getUrl().toString());
+                return !(
+                        url.endsWith("de/" + word + "/") ||
+                        url.endsWith("/login/") ||
+                        url.contains("download") ||
+                        url.endsWith("/word/" + word + "/")
+                );
+            }
+        });
+
+        forvoWebView.loadUrl("https://forvo.com/word/de/" + TranslateActivity.getGermanWordWithoutPrefix() + "/");
         CookieManager.getInstance().setAcceptCookie(true);
     }
 }

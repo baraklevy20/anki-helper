@@ -5,7 +5,8 @@ package levy.barak.ankihelper;
  */
 
 public final class Word {
-    public String word;
+    public String englishWord;
+    public String germanWord;
     public String imageUrl;
     public String soundUrl;
     public String ipa;

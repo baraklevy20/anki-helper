@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -76,15 +77,21 @@ public class GoogleImagesActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         googleImagesWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                Log.i("requestedUrl", request.getUrl().toString());
+                return true;
+            }
+
             public void onPageFinished(WebView view, String url) {
                 googleImagesWebView.evaluateJavascript(WebUtils.getJavascript(googleImagesWebView.getContext(), "googleImages.js"), null);
             }
         });
 
         googleImagesWebView.loadUrl(
-                "http://www.google.de/search?q=" +
+                "https://www.google.de/search?q=" +
                 TranslateActivity.getGermanWordWithoutPrefix() +
-                "&hl=de&tbo=d&site=imghp&tbm=isch"
+                "&hl=de&tbo=d&site=imghp&tbm=isch&gwd_rd=ssl"
         );
 
 
