@@ -19,7 +19,15 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import levy.barak.ankihelper.levy.barak.ankihelper.utils.WebUtils;
 
 public class GoogleTranslateActivity extends Activity {
     public static final String GERMAN_WORD = "GERMAN_WORD";
@@ -70,21 +78,7 @@ public class GoogleTranslateActivity extends Activity {
 
         googleTranslateEditView.setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView view, String url) {
-                googleTranslateEditView.evaluateJavascript(
-                        "(" +
-                                "   function() {" +
-                                "       document.addEventListener('click', function(e) {\n" +
-                                "       var currentNode = e.target;" +
-                                "       while (currentNode.className.split(' ').indexOf('gt-baf-entry-clickable') < 0)" +
-                                "       currentNode = currentNode.parentNode;" +
-                                // childNodes[0] = der/die/das
-                                "       var result = currentNode.firstChild.firstChild.childNodes[0].innerHTML;" +
-                                "       if (currentNode.firstChild.firstChild.childNodes.length == 2) result += ' ' + currentNode.firstChild.firstChild.childNodes[1].innerHTML;" +
-                                "           Android.catchGermanWord(result);\n" +
-                                "       });" +
-                                "   }" +
-                                ")();",
-                        null);
+                googleTranslateEditView.evaluateJavascript(WebUtils.getJavascript(googleTranslateEditView.getContext(), "googleTranslate.js"), null);
             }
         });
 

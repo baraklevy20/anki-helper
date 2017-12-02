@@ -21,6 +21,8 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 
+import levy.barak.ankihelper.levy.barak.ankihelper.utils.WebUtils;
+
 public class GoogleImagesActivity extends Activity {
     public class WebAppInterface {
         Context mContext;
@@ -75,15 +77,7 @@ public class GoogleImagesActivity extends Activity {
         settings.setDomStorageEnabled(true);
         googleImagesWebView.setWebViewClient(new WebViewClient() {
             public void onPageFinished(WebView view, String url) {
-                googleImagesWebView.evaluateJavascript(
-                        "(" +
-                                "   function() {" +
-                                "       document.addEventListener('click', function(e) {\n" +
-                                "           Android.catchHref(e.target.parentNode.getAttribute('href'));\n" +
-                                "       });" +
-                                "   }" +
-                                ")();",
-                        null);
+                googleImagesWebView.evaluateJavascript(WebUtils.getJavascript(googleImagesWebView.getContext(), "googleImages.js"), null);
             }
         });
 
