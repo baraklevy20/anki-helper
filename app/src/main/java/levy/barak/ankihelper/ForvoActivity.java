@@ -14,8 +14,10 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 
 public class ForvoActivity extends Activity {
     public class DownloadHandler implements DownloadListener {
@@ -70,16 +72,24 @@ public class ForvoActivity extends Activity {
         forvoWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                String url = request.getUrl().toString().toLowerCase();
-                String word = TranslateActivity.getGermanWordWithoutPrefix().toLowerCase();
+                try {
+                    String url = java.net.URLDecoder.decode(request.getUrl().toString().toLowerCase(), "UTF-8");
+                    String word = TranslateActivity.getGermanWordWithoutPrefix().toLowerCase();
 
-                Log.i("requestedUrl", request.getUrl().toString());
-                return !(
-                        url.endsWith("de/" + word + "/") ||
-                        url.endsWith("/login/") ||
-                        url.contains("download") ||
-                        url.endsWith("/word/" + word + "/")
-                );
+                    Log.i("requestedUrl", url);
+
+                    return !(
+                            url.endsWith("de/" + word + "/") ||
+                                    url.endsWith("/login/") ||
+                                    url.contains("download") ||
+                                    url.endsWith("/word/" + word + "/")
+                    );
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+                Toast.makeText(getApplicationContext(), "Couldn't decode the URL in Forvo", Toast.LENGTH_LONG).show();
+                return false;
             }
         });
 
