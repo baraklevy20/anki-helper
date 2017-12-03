@@ -390,6 +390,7 @@ public class TranslateActivity extends Activity {
     }
 
     public static String getGermanWordWithoutPrefix() {
+        Log.i("splitted", germanWord);
         String[] splitted = germanWord.split(" ");
         return splitted[splitted.length - 1];
     }

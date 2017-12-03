@@ -1,5 +1,7 @@
 (
 	function () {
+	    //udocument.body.innerHTML = document.body.innerHTML.replace(/gt-baf-entry-clickable/g, 'gt-baf-entry-clickable-disabled')
+
         document.addEventListener('click', function (e) {
             var currentNode = e.target;
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,9 +40,9 @@ public class GoogleTranslateActivity extends Activity {
     private boolean mIsInTranslate = false;
 
     public class WebAppInterface {
-        private Context mContext;
+        private GoogleTranslateActivity mContext;
 
-        WebAppInterface(Context c) {
+        WebAppInterface(GoogleTranslateActivity c) {
             mContext = c;
         }
 
@@ -49,7 +50,7 @@ public class GoogleTranslateActivity extends Activity {
         public void catchGermanWord(String germanWord) {
             TranslateActivity.germanWord = germanWord;
             TranslateActivity.getCorrectPreferences(mContext).edit().putString(GERMAN_WORD, germanWord).commit();
-
+            Log.i("german word", germanWord);
             startActivity(new Intent(mContext, GoogleImagesActivity.class));
 
             new Thread(() -> {
@@ -58,6 +59,12 @@ public class GoogleTranslateActivity extends Activity {
                 try {
                     Document doc = Jsoup.connect("https://www.collinsdictionary.com/dictionary/german-english/" + TranslateActivity.getGermanWordWithoutPrefix().toLowerCase()).get();
                     Elements pronounciations = doc.select(".pron");
+
+                    if (pronounciations.size() == 0) {
+                        mContext.runOnUiThread(() -> Toast.makeText(mContext, "Couldn't find an IPA. Wrong word perhaps?", Toast.LENGTH_LONG).show());
+                        return;
+                    }
+
                     String pronounciation = pronounciations.first().text();
                     pronounciation = pronounciation.substring(1, pronounciation.length() - 1);
                     TranslateActivity.getCorrectPreferences(mContext).edit().putString(SHARED_IPA_SRC, pronounciation).commit();
@@ -88,30 +95,30 @@ public class GoogleTranslateActivity extends Activity {
                 return true;
             }
 
-            @Override
-            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                //Log.i("requestedUrl23", request.getUrl());
-
-                Log.i("requestedUrl2", request.getUrl().toString());
-//                if (request.getUrl().toString().startsWith("https://translate.google.com/translate_a/single")) {
-//                    if (!mIsInTranslate) {
-//                        mIsInTranslate = true;
-//                    }
-//                    else {
-//                        return new WebResourceResponse("", "", null);
-//                    }
+//            @Override
+//            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+//                //Log.i("requestedUrl23", request.getUrl());
+//
+//                Log.i("requestedUrl2", request.getUrl().toString());
+////                if (request.getUrl().toString().startsWith("https://translate.google.com/translate_a/single")) {
+////                    if (!mIsInTranslate) {
+////                        mIsInTranslate = true;
+////                    }
+////                    else {
+////                        return new WebResourceResponse("", "", null);
+////                    }
+////                }
+//
+//                if (mIsInTranslate) {
+//                    return new WebResourceResponse("", "", null);
 //                }
-
-                if (mIsInTranslate) {
-                    return new WebResourceResponse("", "", null);
-                }
-
-                return null;
-            }
+//
+//                return null;
+//            }
 
             public void onPageFinished(WebView view, String url) {
-                mIsInTranslate = true;
-                //googleTranslateEditView.evaluateJavascript(WebUtils.getJavascript(googleTranslateEditView.getContext(), "googleTranslate.js"), null);
+                //mIsInTranslate = true;
+                googleTranslateEditView.evaluateJavascript(WebUtils.getJavascript(googleTranslateEditView.getContext(), "googleTranslate.js"), null);
             }
         });
 
