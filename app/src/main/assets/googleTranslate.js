@@ -4,14 +4,27 @@
 
         document.addEventListener('click', function (e) {
             var currentNode = e.target;
+            var result = null;
 
-            while (currentNode.className.split(' ').indexOf('gt-baf-entry-clickable') < 0)
+            while (currentNode != null && currentNode.className != null && currentNode.className.split(' ').indexOf('result') < 0) {
                 currentNode = currentNode.parentNode;
+            }
 
-            var result = currentNode.firstChild.firstChild.childNodes[0].innerHTML;
+            if (currentNode != null && currentNode.className != null) {
+                result = currentNode.childNodes[1].firstChild.firstChild.innerHTML;
+            } else {
+                currentNode = e.target;
 
-            if (currentNode.firstChild.firstChild.childNodes.length == 2)
-                result += ' ' + currentNode.firstChild.firstChild.childNodes[1].innerHTML;
+                while (currentNode.className != null && currentNode.className.split(' ').indexOf('gt-baf-entry-clickable') < 0) {
+                    currentNode = currentNode.parentNode;
+                }
+
+                result = currentNode.firstChild.firstChild.firstChild.innerHTML;
+
+                if (currentNode.firstChild.firstChild.childNodes.length == 2)
+                    result += ' ' + currentNode.firstChild.firstChild.childNodes[1].innerHTML;
+            }
+
 
             Android.catchGermanWord(result);
         });
