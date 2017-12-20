@@ -30,4 +30,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'org.jsoup:jsoup:1.11.2'
     compile 'org.jetbrains:annotations:15.0'
+    compile 'com.android.support:support-annotations:+'
 }
