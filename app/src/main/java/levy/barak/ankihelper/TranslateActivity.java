@@ -40,6 +40,8 @@ import java.util.ArrayList;
 
 import levy.barak.ankihelper.anki_database.AnkiDatabase;
 
+import static levy.barak.ankihelper.utils.ImageUtils.dipToPixels;
+
 public class TranslateActivity extends Activity {
     public static final String PREFERENCES = "levy.barak.ankihelper";
     public static final String PREFERENCES_CURRENT_WORD = "levy.barak.ankihelper.CURRENT_WORD";
@@ -71,7 +73,7 @@ public class TranslateActivity extends Activity {
             View row = convertView;
             ViewHolder holder;
 
-            if(row == null) {
+            if (row == null) {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
                 row = inflater.inflate(R.layout.list_all_words, null, true);
 
@@ -81,49 +83,48 @@ public class TranslateActivity extends Activity {
                 holder.ipa = row.findViewById(R.id.word_list_ipa);
                 holder.sound = row.findViewById(R.id.word_list_sound);
                 row.setTag(holder);
+            } else {
+                holder = (ViewHolder) row.getTag();
             }
-            else {
-                holder = (ViewHolder)row.getTag();
+
+            try {
+                // Set word and IPA
+                holder.word.setText(getSharedPreferences("Word " + position, MODE_PRIVATE).getString(GoogleTranslateActivity.GERMAN_WORD, ""));
+                holder.ipa.setText(getSharedPreferences("Word " + position, MODE_PRIVATE).getString(GoogleTranslateActivity.SHARED_IPA_SRC, ""));
+
+                // Set image
+                String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
+                        "/anki_helper/anki_helper_image" + position;
+
+                String extension = new File(path + ".jpg").exists() ? "jpg" :
+                        (new File(path + ".png").exists() ? "png" : "gif");
+
+                Bitmap bitmap = BitmapFactory.decodeFile(path + "." + extension);
+                Bitmap bt = Bitmap.createScaledBitmap(bitmap, dipToPixels(context, 150), dipToPixels(context, 100), true);
+                holder.image.setImageBitmap(bt);
+
+                //image.setImageURI(Uri.parse(path + "." + extension));
+
+                // Set sound
+                holder.sound.setOnClickListener(v -> {
+                    try {
+                        MediaPlayer mediaPlayer = new MediaPlayer();
+                        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build());
+                        mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
+                                "/anki_helper/anki_helper_sound" + position + ".mp3"));
+                        mediaPlayer.prepare();
+                        mediaPlayer.start();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
-
-            // Set word and IPA
-            holder.word.setText(getSharedPreferences("Word " + position, MODE_PRIVATE).getString(GoogleTranslateActivity.GERMAN_WORD, ""));
-            holder.ipa.setText(getSharedPreferences("Word " + position, MODE_PRIVATE).getString(GoogleTranslateActivity.SHARED_IPA_SRC, ""));
-
-            // Set image
-            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                    "/anki_helper/anki_helper_image" + position;
-
-            String extension = new File(path + ".jpg").exists() ? "jpg" :
-                    (new File(path + ".png").exists() ? "png" : "gif");
-
-            Bitmap bitmap = BitmapFactory.decodeFile(path + "." + extension);
-            Bitmap bt = Bitmap.createScaledBitmap(bitmap, dipToPixels(context, 150), dipToPixels(context, 100), true);
-            holder.image.setImageBitmap(bt);
-
-            //image.setImageURI(Uri.parse(path + "." + extension));
-
-            // Set sound
-            holder.sound.setOnClickListener(v -> {
-                try {
-                    MediaPlayer mediaPlayer = new MediaPlayer();
-                    mediaPlayer.setAudioAttributes(new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build());
-                    mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                            "/anki_helper/anki_helper_sound" + position + ".mp3"));
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+            catch (Exception e) {
+                Toast.makeText(context, "There was an error reading card #" + position, Toast.LENGTH_LONG).show();
+            }
 
             return row;
         }
-    }
-
-    public static int dipToPixels(Context context, float dipValue) {
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
     }
 
     @Override
