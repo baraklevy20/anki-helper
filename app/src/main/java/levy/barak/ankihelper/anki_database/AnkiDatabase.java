@@ -36,10 +36,11 @@ public class AnkiDatabase {
     private Context context;
 
     // Debug
-    private long deckId = 1508871866832L;
+    private long deckId = 1508871866835L;
 
-    public AnkiDatabase(Context context) {
+    public AnkiDatabase(Context context, boolean isDebug) {
         this.context = context;
+        this.deckId = isDebug ? 1508871866832L : 1508871866835L;
     }
 
     public void generateDatabase(int currentWord) {

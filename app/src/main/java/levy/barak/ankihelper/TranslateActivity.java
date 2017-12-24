@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -185,15 +186,14 @@ public class TranslateActivity extends Activity {
 
     public void onClearClick(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-        builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+        builder.setMessage("Are you sure you want to remove the cards?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
     }
 
     public void onGenerateCardsClick(View view) {
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                "/anki_helper/collection.anki2";
+        boolean isDebug = ((ToggleButton)findViewById(R.id.debugButton)).isChecked();
 
-        AnkiDatabase ankiDatabase = new AnkiDatabase(this);
+        AnkiDatabase ankiDatabase = new AnkiDatabase(this, isDebug);
 
         ankiDatabase.generateDatabase(currentWord);
 
