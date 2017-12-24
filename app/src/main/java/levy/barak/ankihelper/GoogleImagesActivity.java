@@ -4,14 +4,10 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -22,7 +18,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 
-import levy.barak.ankihelper.levy.barak.ankihelper.utils.WebUtils;
+import levy.barak.ankihelper.utils.FileUtils;
 
 public class GoogleImagesActivity extends Activity {
     public class WebAppInterface {
@@ -84,7 +80,7 @@ public class GoogleImagesActivity extends Activity {
             }
 
             public void onPageFinished(WebView view, String url) {
-                googleImagesWebView.evaluateJavascript(WebUtils.getJavascript(googleImagesWebView.getContext(), "googleImages.js"), null);
+                googleImagesWebView.evaluateJavascript(FileUtils.getFileContent(googleImagesWebView.getContext(), "googleImages.js"), null);
             }
         });
 

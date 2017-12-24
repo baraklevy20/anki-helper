@@ -1,17 +1,11 @@
 package levy.barak.ankihelper;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.webkit.JavascriptInterface;
-import android.webkit.ValueCallback;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -19,18 +13,11 @@ import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import levy.barak.ankihelper.levy.barak.ankihelper.utils.WebUtils;
+import levy.barak.ankihelper.utils.FileUtils;
 
 public class GoogleTranslateActivity extends Activity {
     public static final String GERMAN_WORD = "GERMAN_WORD";
@@ -118,7 +105,7 @@ public class GoogleTranslateActivity extends Activity {
 
             public void onPageFinished(WebView view, String url) {
                 //mIsInTranslate = true;
-                googleTranslateEditView.evaluateJavascript(WebUtils.getJavascript(googleTranslateEditView.getContext(), "googleTranslate.js"), null);
+                googleTranslateEditView.evaluateJavascript(FileUtils.getFileContent(googleTranslateEditView.getContext(), "googleTranslate.js"), null);
             }
         });
 
