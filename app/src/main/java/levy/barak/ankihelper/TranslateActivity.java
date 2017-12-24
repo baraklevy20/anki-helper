@@ -16,9 +16,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,17 +36,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import levy.barak.ankihelper.anki_database.AnkiDatabase;
-
-import static levy.barak.ankihelper.utils.ImageUtils.dipToPixels;
+import levy.barak.ankihelper.utils.ImageUtils;
 
 public class TranslateActivity extends Activity {
-    public static final String PREFERENCES = "levy.barak.ankihelper";
-    public static final String PREFERENCES_CURRENT_WORD = "levy.barak.ankihelper.CURRENT_WORD";
-
-    public static String englishWord;
-    public static String germanWord;
-    public static int currentWord;
-
     public class CustomAdapter extends ArrayAdapter<Word> {
         Context context;
         ArrayList<Word> words;
@@ -88,30 +77,23 @@ public class TranslateActivity extends Activity {
             }
 
             try {
+                Word word = words.get(position);
+
                 // Set word and IPA
-                holder.word.setText(getSharedPreferences("Word " + position, MODE_PRIVATE).getString(GoogleTranslateActivity.GERMAN_WORD, ""));
-                holder.ipa.setText(getSharedPreferences("Word " + position, MODE_PRIVATE).getString(GoogleTranslateActivity.SHARED_IPA_SRC, ""));
+                holder.word.setText(word.germanWord);
+                holder.ipa.setText(word.ipa);
 
                 // Set image
-                String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                        "/anki_helper/anki_helper_image" + position;
-
-                String extension = new File(path + ".jpg").exists() ? "jpg" :
-                        (new File(path + ".png").exists() ? "png" : "gif");
-
-                Bitmap bitmap = BitmapFactory.decodeFile(path + "." + extension);
-                Bitmap bt = Bitmap.createScaledBitmap(bitmap, dipToPixels(context, 150), dipToPixels(context, 100), true);
+                Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + word.imagesUrl.get(0));
+                Bitmap bt = Bitmap.createScaledBitmap(bitmap, ImageUtils.dipToPixels(context, 150), ImageUtils.dipToPixels(context, 100), true);
                 holder.image.setImageBitmap(bt);
-
-                //image.setImageURI(Uri.parse(path + "." + extension));
 
                 // Set sound
                 holder.sound.setOnClickListener(v -> {
                     try {
                         MediaPlayer mediaPlayer = new MediaPlayer();
                         mediaPlayer.setAudioAttributes(new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build());
-                        mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                                "/anki_helper/anki_helper_sound" + position + ".mp3"));
+                        mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + word.soundsUrl.get(0)));
                         mediaPlayer.prepare();
                         mediaPlayer.start();
                     } catch (IOException e) {
@@ -150,18 +132,12 @@ public class TranslateActivity extends Activity {
             requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         }
 
-        currentWord = getSharedPreferences(PREFERENCES, MODE_PRIVATE).getInt(PREFERENCES_CURRENT_WORD, 0);
-
-        ArrayList<Word> words = new ArrayList<>();
-
-        for (int i = 0; i < currentWord; i++) {
-            words.add(new Word());
-        }
+        AnkiHelperApplication.readWords();
 
         ListView listView = findViewById(R.id.newWordsList);
-        listView.setAdapter(new CustomAdapter(this, words));
+        listView.setAdapter(new CustomAdapter(this, AnkiHelperApplication.allWords));
         EditText editText = findViewById(R.id.englishWordEditText);
-        editText.setText("dog");
+        editText.setText("cat");
 
         // This enable to click enter and it would translate the word, instead of clicking "translate"
         editText.setOnEditorActionListener((v, actionId, event) -> {
@@ -180,7 +156,7 @@ public class TranslateActivity extends Activity {
             editText.setError("Please enter a word");
         }
         else {
-            englishWord = editText.getText().toString();
+            AnkiHelperApplication.currentWord = new Word(editText.getText().toString());
             startActivity(new Intent(this, GoogleTranslateActivity.class));
         }
     }
@@ -196,7 +172,7 @@ public class TranslateActivity extends Activity {
 
         AnkiDatabase ankiDatabase = new AnkiDatabase(this, isDebug);
 
-        ankiDatabase.generateDatabase(currentWord);
+        ankiDatabase.generateDatabase();
 
         // Clear everything
         onClearClick(view);
@@ -215,12 +191,11 @@ public class TranslateActivity extends Activity {
     }
 
     public static SharedPreferences getCorrectPreferences(Context context) {
-        return context.getSharedPreferences("Word " + currentWord, MODE_PRIVATE);
+        return context.getSharedPreferences("Word " + AnkiHelperApplication.allWords.size(), MODE_PRIVATE);
     }
 
     public static String getGermanWordWithoutPrefix() {
-        Log.i("splitted", germanWord);
-        String[] splitted = germanWord.split(" ");
+        String[] splitted = AnkiHelperApplication.currentWord.germanWord.split(" ");
         return splitted[splitted.length - 1];
     }
 
@@ -230,7 +205,8 @@ public class TranslateActivity extends Activity {
             switch (which){
                 case DialogInterface.BUTTON_POSITIVE:
                     // Reset the words to 0
-                    getSharedPreferences(PREFERENCES, MODE_PRIVATE).edit().remove(PREFERENCES_CURRENT_WORD).commit();
+                    AnkiHelperApplication.allWords.clear();
+                    AnkiHelperApplication.writeWords();
                     File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
                             "/anki_helper");
 

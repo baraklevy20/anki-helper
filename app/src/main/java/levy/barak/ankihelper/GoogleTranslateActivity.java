@@ -20,12 +20,6 @@ import java.io.IOException;
 import levy.barak.ankihelper.utils.FileUtils;
 
 public class GoogleTranslateActivity extends Activity {
-    public static final String GERMAN_WORD = "GERMAN_WORD";
-    public static final String SHARED_IMAGE_SRC = "IMAGE_SRC";
-    public static final String SHARED_IPA_SRC = "IPA_VALUE";
-
-    private boolean mIsInTranslate = false;
-
     public class WebAppInterface {
         private GoogleTranslateActivity mContext;
 
@@ -35,9 +29,7 @@ public class GoogleTranslateActivity extends Activity {
 
         @JavascriptInterface
         public void catchGermanWord(String germanWord) {
-            TranslateActivity.germanWord = germanWord;
-            TranslateActivity.getCorrectPreferences(mContext).edit().putString(GERMAN_WORD, germanWord).commit();
-            Log.i("german word", germanWord);
+            AnkiHelperApplication.currentWord.germanWord = germanWord;
             startActivity(new Intent(mContext, GoogleImagesActivity.class));
 
             new Thread(() -> {
@@ -54,7 +46,7 @@ public class GoogleTranslateActivity extends Activity {
 
                     String pronounciation = pronounciations.first().text();
                     pronounciation = pronounciation.substring(1, pronounciation.length() - 1);
-                    TranslateActivity.getCorrectPreferences(mContext).edit().putString(SHARED_IPA_SRC, pronounciation).commit();
+                    AnkiHelperApplication.currentWord.ipa = pronounciation;
                 } catch (IOException e) {
                     builder.append("Error : ").append(e.getMessage()).append("\n");
                 }
@@ -109,6 +101,6 @@ public class GoogleTranslateActivity extends Activity {
             }
         });
 
-        googleTranslateEditView.loadUrl("https://translate.google.com/m/translate#en/de/" + TranslateActivity.englishWord);
+        googleTranslateEditView.loadUrl("https://translate.google.com/m/translate#en/de/" + AnkiHelperApplication.currentWord.englishWord);
     }
 }

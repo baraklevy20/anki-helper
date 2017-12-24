@@ -29,28 +29,20 @@ public class ForvoActivity extends Activity {
 
         @Override
         public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-            // Delete existing file
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                    "anki_helper/anki_helper_sound" + TranslateActivity.currentWord + ".mp3");
-
-            if (file.exists()) {
-                file.delete();
-            }
+            String downloadName = "anki_helper_sound_" + AnkiHelperApplication.currentWord.id + "_" + AnkiHelperApplication.currentWord.soundsUrl.size();
 
             // Download it
             DownloadManager.Request request = new DownloadManager.Request(
                     Uri.parse(url));
             request.addRequestHeader("Cookie", CookieManager.getInstance().getCookie("forvo.com"));
             request.allowScanningByMediaScanner();
-            //request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED); // vibrates when the download is completed
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "anki_helper/anki_helper_sound" + TranslateActivity.currentWord + ".mp3");
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "anki_helper/" + downloadName);
             DownloadManager dm = (DownloadManager) forvoWebView.getContext().getSystemService(Context.DOWNLOAD_SERVICE);
             dm.enqueue(request);
-            TranslateActivity.currentWord++;
-            getSharedPreferences(TranslateActivity.PREFERENCES, MODE_PRIVATE).
-                    edit().
-                    putInt(TranslateActivity.PREFERENCES_CURRENT_WORD, TranslateActivity.currentWord).
-                    commit();
+
+            AnkiHelperApplication.currentWord.soundsUrl.add(downloadName);
+            AnkiHelperApplication.allWords.add(AnkiHelperApplication.currentWord);
+            AnkiHelperApplication.writeWords();
             startActivity(new Intent(forvoWebView.getContext(), TranslateActivity.class));
         }
     }

@@ -35,26 +35,16 @@ public class GoogleImagesActivity extends Activity {
             String[] parts = href.split("\\?");
             String[] attributes = href.split("&");
             String imageUrl = java.net.URLDecoder.decode(attributes[0].split("=")[1], "UTF-8");
-            TranslateActivity.getCorrectPreferences(mContext).edit().putString(GoogleTranslateActivity.SHARED_IMAGE_SRC, imageUrl).commit();
-
-            Toast.makeText(mContext, TranslateActivity.getCorrectPreferences(mContext).getString(GoogleTranslateActivity.SHARED_IMAGE_SRC, ""), Toast.LENGTH_SHORT).show();
 
             startActivity(new Intent(mContext, ForvoActivity.class));
 
             new Thread(() -> {
-                // Delete existing file
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                        "/anki_helper/anki_helper_image" + TranslateActivity.currentWord + imageUrl.substring(imageUrl.lastIndexOf('.')));
-
-                if (file.exists()) {
-                    file.delete();
-                }
-
                 // Download it
+                String downloadName = "anki_helper_image_" + AnkiHelperApplication.currentWord.id + "_" + AnkiHelperApplication.currentWord.imagesUrl.size();
                 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(imageUrl));
                 request.allowScanningByMediaScanner();
-                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
-                        "anki_helper/anki_helper_image" + TranslateActivity.currentWord + imageUrl.substring(imageUrl.lastIndexOf('.')));
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "anki_helper/" + downloadName);
+                AnkiHelperApplication.currentWord.imagesUrl.add(downloadName);
                 DownloadManager dm = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
                 dm.enqueue(request);
             }).start();

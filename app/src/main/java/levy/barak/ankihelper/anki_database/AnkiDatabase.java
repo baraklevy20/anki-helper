@@ -15,13 +15,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import levy.barak.ankihelper.AnkiHelperApplication;
 import levy.barak.ankihelper.GoogleTranslateActivity;
+import levy.barak.ankihelper.Word;
 import levy.barak.ankihelper.utils.FileUtils;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -43,9 +47,9 @@ public class AnkiDatabase {
         this.deckId = isDebug ? 1508871866832L : 1508871866835L;
     }
 
-    public void generateDatabase(int currentWord) {
+    public void generateDatabase() {
         createDatabase();
-        createMedia(currentWord);
+        createMedia();
     }
 
     public void createDatabase() {
@@ -87,46 +91,28 @@ public class AnkiDatabase {
         ));
     }
 
-    public long insertNote(int index) throws NoSuchAlgorithmException {
-        long noteId = (long)(Math.random() * Long.MAX_VALUE);
-        String fullText = getFullText(index, noteId);
-        String germanWord = getGermanWord(index);
+    public void insertNote(Word word) throws NoSuchAlgorithmException {
+        String fullText = getFullText(word);
 
         db.execSQL(String.format("INSERT into notes VALUES ('%d', '%s', '1366716141610', '%d', '-1', '', '%s', '%s', '%s', '0', '')",
-                noteId,
+                word.id,
                 UUID.randomUUID().toString().substring(0, 10),
                 System.currentTimeMillis() / 1000,
                 fullText,
-                germanWord,
-                Long.parseLong(sha1(germanWord).substring(0, 8), 16)
+                word.germanWord,
+                Long.parseLong(sha1(word.germanWord).substring(0, 8), 16)
         ));
-
-        return noteId;
     }
 
-    public String getFullText(int index, long noteId) {
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                "/anki_helper/anki_helper_image_" + noteId + "_0";
-
-        String extension = new File(path + ".jpg").exists() ? "jpg" :
-                (new File(path + ".png").exists() ? "png" : "gif");
-
-        String germanWord = getGermanWord(index).replace(" ", "&nbsp");
-        String image = "<img src=\"" + "anki_helper_image_" + noteId + "_0." + extension + "\" />";
+    public String getFullText(Word word) {
+        String germanWord = word.germanWord.replace(" ", "&nbsp");
+        String image = "<img src=\"anki_helper_image_" + word.id + "_0\" />";
         String personal = "";
-        String soundAndIpa = "[sound:" + "anki_helper_sound_" + noteId + "_0.mp3]<div>" + getIPA(index) + "</div>";
+        String soundAndIpa = "[sound:anki_helper_sound_" + word.id + "_0]<div>" + word.ipa + "</div>";
         String spelling = "";
 
         char separator = 0x1F;
         return germanWord + separator + image + separator + personal + separator + soundAndIpa + separator + spelling;
-    }
-
-    public String getGermanWord(int index) {
-        return context.getSharedPreferences("Word " + index, MODE_PRIVATE).getString(GoogleTranslateActivity.GERMAN_WORD, "");
-    }
-
-    public String getIPA(int index) {
-        return context.getSharedPreferences("Word " + index, MODE_PRIVATE).getString(GoogleTranslateActivity.SHARED_IPA_SRC, "");
     }
 
     static String sha1(String input) throws NoSuchAlgorithmException {
@@ -140,37 +126,27 @@ public class AnkiDatabase {
         return sb.toString();
     }
 
-    public void createMedia(int currentWord) {
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                "/anki_helper/collection.anki2";
+    public void createMedia() {
         // Create media
-        String path2 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/anki_helper/";
-        String[] medias = new String[currentWord * 2];
+        String ankiHelperPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/anki_helper";
+        String[] medias = new String[AnkiHelperApplication.allWords.size() * 2];
 
         // Add notes and cards
-        for (int i = 0; i < currentWord; i++) {
+        for (int i = 0; i < AnkiHelperApplication.allWords.size(); i++) {
             try {
-                long noteId = insertNote(i);
-                insertCard(0, noteId);
-                insertCard(1, noteId);
+                Word word = AnkiHelperApplication.allWords.get(i);
+                insertNote(word);
+                insertCard(0, word.id);
+                insertCard(1, word.id);
 
                 try {
-                    String imagePath = getImagePath(i);
-                    String soundPath = "anki_helper_sound" + i + ".mp3";
-
                     // Add the medias to the array
-                    String path3 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                            "/anki_helper/anki_helper_image" + i;
-
-                    String extension = new File(path + ".jpg").exists() ? "jpg" :
-                            (new File(path + ".png").exists() ? "png" : "gif");
-
-                    medias[2 * i] = "anki_helper_image_" + noteId + "_0." + extension;
-                    medias[2 * i + 1] = "anki_helper_sound_" + noteId + "_0.mp3";
+                    medias[2 * i] = "anki_helper_image_" + word.id + "_0";
+                    medias[2 * i + 1] = "anki_helper_sound_" + word.id + "_0";
 
                     // Convert the files
-                    copy(new File(path2 + imagePath), new File(path2 + (2 * i)));
-                    copy(new File(path2 + soundPath), new File(path2 + (2 * i + 1)));
+                    Files.move(Paths.get(ankiHelperPath + "/anki_helper_image_" + word.id + "_0"), Paths.get(ankiHelperPath + "/" + (2 * i)));
+                    Files.move(Paths.get(ankiHelperPath + "/anki_helper_sound_" + word.id + "_0"), Paths.get(ankiHelperPath + "/" + (2 * i + 1)));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -185,7 +161,7 @@ public class AnkiDatabase {
         }
 
         String json = "{" + String.join(", ", medias) + "}";
-        File jsonFile = new File(path2 + "media");
+        File jsonFile = new File(ankiHelperPath + "/media");
         try {
             PrintWriter pw = new PrintWriter(jsonFile);
             pw.print(json);
@@ -195,13 +171,13 @@ public class AnkiDatabase {
         }
 
         // Create ZIP
-        String[] fileNames = new String[currentWord * 2 + 2];
-        for (int i = 0; i < currentWord * 2; i++) {
-            fileNames[i] = path2 + i;
+        String[] fileNames = new String[AnkiHelperApplication.allWords.size() * 2 + 2];
+        for (int i = 0; i < AnkiHelperApplication.allWords.size() * 2; i++) {
+            fileNames[i] = ankiHelperPath + "/" + i;
         }
 
-        fileNames[currentWord * 2] = path2 + "media";
-        fileNames[currentWord * 2 + 1] = path2 + "collection.anki2";
+        fileNames[AnkiHelperApplication.allWords.size() * 2] = ankiHelperPath + "/media";
+        fileNames[AnkiHelperApplication.allWords.size() * 2 + 1] = ankiHelperPath + "/collection.anki2";
 
         zip(fileNames, Environment.getExternalStorageDirectory() + "/AnkiDroid/test.apkg");
     }
@@ -233,19 +209,6 @@ public class AnkiDatabase {
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public static void copy(File src, File dst) throws IOException {
-        try (InputStream in = new FileInputStream(src)) {
-            try (OutputStream out = new FileOutputStream(dst)) {
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
-                int len;
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-            }
         }
     }
 }

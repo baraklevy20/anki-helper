@@ -31,4 +31,5 @@ dependencies {
     compile 'org.jsoup:jsoup:1.11.2'
     compile 'org.jetbrains:annotations:15.0'
     compile 'com.android.support:support-annotations:+'
+    compile 'com.google.code.gson:gson:2.7'
 }
