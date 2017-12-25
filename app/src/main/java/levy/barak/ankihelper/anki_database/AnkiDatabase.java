@@ -12,8 +12,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -24,12 +22,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import levy.barak.ankihelper.AnkiHelperApplication;
-import levy.barak.ankihelper.GoogleTranslateActivity;
 import levy.barak.ankihelper.Word;
 import levy.barak.ankihelper.utils.FileUtils;
-
-import static android.content.Context.MODE_PRIVATE;
-import static levy.barak.ankihelper.TranslateActivity.getImagePath;
 
 /**
  * Created by baraklev on 12/24/2017.

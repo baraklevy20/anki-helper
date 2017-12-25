@@ -15,7 +15,7 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="Enter a word"
-        android:inputType="textPersonName"
+        android:inputType="textShortMessage"
         android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,19 +31,6 @@
         android:text="Translate"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/englishWordEditText" />
-
-    <ListView
-        android:id="@+id/newWordsList"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/debugButton" />
 
     <Button
         android:id="@+id/clearButton"
@@ -84,11 +71,24 @@
         android:id="@+id/debugLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:text="Is Debug:"
-        app:layout_constraintBottom_toTopOf="@+id/newWordsList"
         app:layout_constraintEnd_toStartOf="@+id/debugButton"
         app:layout_constraintTop_toBottomOf="@+id/generateCardsButton" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/cardsList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/debugButton" />
+
 </android.support.constraint.ConstraintLayout>

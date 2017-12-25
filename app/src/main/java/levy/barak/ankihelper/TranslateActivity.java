@@ -3,112 +3,25 @@ package levy.barak.ankihelper;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.AudioAttributes;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.view.LayoutInflater;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
 import levy.barak.ankihelper.anki_database.AnkiDatabase;
-import levy.barak.ankihelper.utils.ImageUtils;
 
 public class TranslateActivity extends Activity {
-    public class CustomAdapter extends ArrayAdapter<Word> {
-        Context context;
-        ArrayList<Word> words;
-
-        public CustomAdapter(Context context, ArrayList<Word> words) {
-            super(context, -1, words);
-
-            this.context = context;
-            this.words = words;
-        }
-
-        class ViewHolder {
-            TextView word;
-            ImageView image;
-            TextView ipa;
-            ImageButton sound;
-        }
-
-        @Override
-        public View getView(int position, @Nullable View convertView, ViewGroup parent) {
-            View row = convertView;
-            ViewHolder holder;
-
-            if (row == null) {
-                LayoutInflater inflater = (LayoutInflater) context.getSystemService(LAYOUT_INFLATER_SERVICE);
-                row = inflater.inflate(R.layout.list_all_words, null, true);
-
-                holder = new ViewHolder();
-                holder.word = row.findViewById(R.id.word_list_word);
-                holder.image = row.findViewById(R.id.word_list_image);
-                holder.ipa = row.findViewById(R.id.word_list_ipa);
-                holder.sound = row.findViewById(R.id.word_list_sound);
-                row.setTag(holder);
-            } else {
-                holder = (ViewHolder) row.getTag();
-            }
-
-            try {
-                Word word = words.get(position);
-
-                // Set word and IPA
-                holder.word.setText(word.germanWord);
-                holder.ipa.setText(word.ipa);
-
-                // Set image
-                Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + word.imagesUrl.get(0));
-                Bitmap bt = Bitmap.createScaledBitmap(bitmap, ImageUtils.dipToPixels(context, 150), ImageUtils.dipToPixels(context, 100), true);
-                holder.image.setImageBitmap(bt);
-
-                // Set sound
-                holder.sound.setOnClickListener(v -> {
-                    try {
-                        MediaPlayer mediaPlayer = new MediaPlayer();
-                        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build());
-                        mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + word.soundsUrl.get(0)));
-                        mediaPlayer.prepare();
-                        mediaPlayer.start();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-            catch (Exception e) {
-                Toast.makeText(context, "There was an error reading card #" + position, Toast.LENGTH_LONG).show();
-            }
-
-            return row;
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length == 0
@@ -134,14 +47,17 @@ public class TranslateActivity extends Activity {
 
         AnkiHelperApplication.readWords();
 
-        ListView listView = findViewById(R.id.newWordsList);
-        listView.setAdapter(new CustomAdapter(this, AnkiHelperApplication.allWords));
+        RecyclerView cardsList = findViewById(R.id.cardsList);
+        cardsList.setHasFixedSize(true);
+        cardsList.setLayoutManager(new LinearLayoutManager(this));
+        cardsList.setAdapter(new CardsListAdapter(this, AnkiHelperApplication.allWords));
+
         EditText editText = findViewById(R.id.englishWordEditText);
         editText.setText("cat");
 
         // This enable to click enter and it would translate the word, instead of clicking "translate"
         editText.setOnEditorActionListener((v, actionId, event) -> {
-            if(actionId == EditorInfo.IME_ACTION_DONE) {
+            if(actionId == EditorInfo.IME_ACTION_NEXT) {
                 onTranslateClick(null);
                 return true;
             }
@@ -178,20 +94,6 @@ public class TranslateActivity extends Activity {
         onClearClick(view);
 
         Toast.makeText(this, "Done!", Toast.LENGTH_SHORT).show();
-    }
-
-    public static String getImagePath(int index) {
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                "/anki_helper/anki_helper_image" + index;
-
-        String extension = new File(path + ".jpg").exists() ? "jpg" :
-                (new File(path + ".png").exists() ? "png" : "gif");
-
-        return "anki_helper_image" + index + "." + extension;
-    }
-
-    public static SharedPreferences getCorrectPreferences(Context context) {
-        return context.getSharedPreferences("Word " + AnkiHelperApplication.allWords.size(), MODE_PRIVATE);
     }
 
     public static String getGermanWordWithoutPrefix() {
