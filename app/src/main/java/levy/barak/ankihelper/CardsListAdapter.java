@@ -49,8 +49,7 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
     }
 
     @Override
-    public DataObjectHolder onCreateViewHolder(ViewGroup parent,
-                                               int viewType) {
+    public DataObjectHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.word_card, parent, false);
 
         DataObjectHolder dataObjectHolder = new DataObjectHolder(view);
@@ -67,8 +66,12 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
 
         // Set image
         Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + word.imagesUrl.get(0));
-        Bitmap bt = Bitmap.createScaledBitmap(bitmap, ImageUtils.dipToPixels(mContext, 150), ImageUtils.dipToPixels(mContext, 100), true);
-        holder.image.setImageBitmap(bt);
+        //Bitmap bt = Bitmap.createScaledBitmap(bitmap, ImageUtils.dipToPixels(mContext, 100), ImageUtils.dipToPixels(mContext, 100), true);
+        holder.image.setImageBitmap(bitmap);
+        //bt = null;
+        bitmap = null;
+
+        holder.image.setOnClickListener(v -> ((TranslateActivity)mContext).zoomImageFromThumb(holder.itemView, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + word.imagesUrl.get(0)));
 
         // Set sound
         holder.sound.setOnClickListener(v -> {
