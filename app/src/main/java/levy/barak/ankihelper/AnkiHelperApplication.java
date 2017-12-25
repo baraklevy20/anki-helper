@@ -40,7 +40,7 @@ public class AnkiHelperApplication extends Application {
         String json = prefs.getString("Words", "");
         Word[] words = gson.fromJson(json, Word[].class);
 
-        allWords = new ArrayList<Word>();
+        allWords = new ArrayList<>();
 
         // If there are no words, return
         if (words == null) {
