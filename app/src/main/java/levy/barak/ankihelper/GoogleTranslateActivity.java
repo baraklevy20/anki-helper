@@ -36,17 +36,16 @@ public class GoogleTranslateActivity extends Activity {
                 final StringBuilder builder = new StringBuilder();
 
                 try {
-                    Document doc = Jsoup.connect("https://www.collinsdictionary.com/dictionary/german-english/" + TranslateActivity.getGermanWordWithoutPrefix().toLowerCase()).get();
-                    Elements pronounciations = doc.select(".pron");
+                    Document doc = Jsoup.connect("https://de.wiktionary.org/wiki/" + TranslateActivity.getGermanWordWithoutPrefix()).get();
 
-                    if (pronounciations.size() == 0) {
+                    Elements ipas = doc.select(".ipa");
+
+                    if (ipas.size() == 0) {
                         mContext.runOnUiThread(() -> Toast.makeText(mContext, "Couldn't find an IPA. Wrong word perhaps?", Toast.LENGTH_LONG).show());
                         return;
                     }
 
-                    String pronounciation = pronounciations.first().text();
-                    pronounciation = pronounciation.substring(1, pronounciation.length() - 1);
-                    AnkiHelperApplication.currentWord.ipa = pronounciation;
+                    AnkiHelperApplication.currentWord.ipa = ipas.first().text();
                 } catch (IOException e) {
                     builder.append("Error : ").append(e.getMessage()).append("\n");
                 }

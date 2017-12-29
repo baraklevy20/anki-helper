@@ -62,6 +62,7 @@ public class TranslateActivity extends Activity {
         AnkiHelperApplication.readWords();
 
         RecyclerView cardsList = findViewById(R.id.cardsList);
+        cardsList.getRecycledViewPool().setMaxRecycledViews(0,0);
         cardsList.setHasFixedSize(true);
         cardsList.setLayoutManager(new LinearLayoutManager(this));
         cardsList.setAdapter(new CardsListAdapter(this, AnkiHelperApplication.allWords));

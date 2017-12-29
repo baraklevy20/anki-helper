@@ -68,12 +68,12 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         holder.ipa.setText(word.ipa);
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        //holder.imagesListLayout.removeAllViews();
+        holder.imagesListLayout.removeAllViews();
 
         // Set image
         for (String imageUrl : word.imagesUrl) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
+            //BitmapFactory.Options options = new BitmapFactory.Options();
+            //options.inJustDecodeBounds = true;
             Bitmap bitmap = decodeSampledBitmap(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + imageUrl, ImageUtils.dipToPixels(mContext, 48), ImageUtils.dipToPixels(mContext, 48));
 
             CircleImageView imageView = (CircleImageView) inflater.inflate(R.layout.card_image_view, holder.imagesListLayout, false);
