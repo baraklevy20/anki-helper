@@ -55,7 +55,7 @@ public class GoogleImagesActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_images);
 
-        final WebView googleImagesWebView = findViewById(R.id.googleImagesWebView);
+        final WebView googleImagesWebView = (WebView) findViewById(R.id.googleImagesWebView);
 
         googleImagesWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
 

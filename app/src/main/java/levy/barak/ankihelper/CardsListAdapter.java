@@ -8,19 +8,16 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import levy.barak.ankihelper.utils.ImageUtils;
 
 /**
@@ -34,15 +31,15 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
     public static class DataObjectHolder extends RecyclerView.ViewHolder {
         private TextView word;
         private TextView ipa;
-        private ImageButton sound;
-        private LinearLayout imagesListLayout;
+        private Button sound;
+        private ImageView image;
 
         public DataObjectHolder(View itemView) {
             super(itemView);
-            word = itemView.findViewById(R.id.word_list_word);
-            ipa = itemView.findViewById(R.id.word_list_ipa);
-            sound = itemView.findViewById(R.id.word_list_sound);
-            imagesListLayout = itemView.findViewById(R.id.word_images_list);
+            word = (TextView) itemView.findViewById(R.id.word_list_word);
+            ipa = (TextView) itemView.findViewById(R.id.word_list_ipa);
+            sound = (Button) itemView.findViewById(R.id.word_list_sound);
+            image = (ImageView) itemView.findViewById(R.id.word_list_image);
         }
     }
 
@@ -67,22 +64,12 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         holder.word.setText(word.germanWord);
         holder.ipa.setText(word.ipa);
 
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-        holder.imagesListLayout.removeAllViews();
-
         // Set image
         for (String imageUrl : word.imagesUrl) {
-            //BitmapFactory.Options options = new BitmapFactory.Options();
-            //options.inJustDecodeBounds = true;
-            Bitmap bitmap = decodeSampledBitmap(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + imageUrl, ImageUtils.dipToPixels(mContext, 48), ImageUtils.dipToPixels(mContext, 48));
-
-            CircleImageView imageView = (CircleImageView) inflater.inflate(R.layout.card_image_view, holder.imagesListLayout, false);
-            imageView.setImageBitmap(bitmap);
-            imageView.setOnClickListener(v -> ((TranslateActivity) mContext).zoomImageFromThumb(imageView, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + imageUrl));
-
-            holder.imagesListLayout.addView(imageView);
+            Bitmap bitmap = decodeSampledBitmap(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + imageUrl, ImageUtils.dipToPixels(mContext, 288), ImageUtils.dipToPixels(mContext, 144));
+            holder.image.setImageBitmap(bitmap);
+            holder.image.setOnClickListener(v -> ((TranslateActivity) mContext).zoomImageFromThumb(holder.image, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + imageUrl));
         }
-
         // Set sound
         holder.sound.setOnClickListener(v -> {
             try {

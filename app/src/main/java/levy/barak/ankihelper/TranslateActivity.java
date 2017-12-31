@@ -61,13 +61,13 @@ public class TranslateActivity extends Activity {
 
         AnkiHelperApplication.readWords();
 
-        RecyclerView cardsList = findViewById(R.id.cardsList);
+        RecyclerView cardsList = (RecyclerView) findViewById(R.id.cardsList);
         cardsList.getRecycledViewPool().setMaxRecycledViews(0,0);
         cardsList.setHasFixedSize(true);
         cardsList.setLayoutManager(new LinearLayoutManager(this));
         cardsList.setAdapter(new CardsListAdapter(this, AnkiHelperApplication.allWords));
 
-        EditText editText = findViewById(R.id.englishWordEditText);
+        EditText editText = (EditText) findViewById(R.id.englishWordEditText);
         editText.setText("cat");
 
         // This enable to click enter and it would translate the word, instead of clicking "translate"
@@ -86,7 +86,7 @@ public class TranslateActivity extends Activity {
     }
 
     public void onTranslateClick(View view) {
-        EditText editText = findViewById(R.id.englishWordEditText);
+        EditText editText = (EditText) findViewById(R.id.englishWordEditText);
 
         if (editText.getText().toString().trim().isEmpty()) {
             editText.setError("Please enter a word");
@@ -131,7 +131,7 @@ public class TranslateActivity extends Activity {
 
 
         // Load the high-resolution "zoomed-in" image.
-        final ImageView expandedImageView = findViewById(R.id.expanded_image);
+        final ImageView expandedImageView = (ImageView) findViewById(R.id.expanded_image);
         Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
         expandedImageView.setImageBitmap(bitmap);
 

@@ -59,7 +59,7 @@ public class GoogleTranslateActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_translate);
 
-        final WebView googleTranslateEditView = findViewById(R.id.googleTranslateWebView);
+        final WebView googleTranslateEditView = (WebView) findViewById(R.id.googleTranslateWebView);
         googleTranslateEditView.addJavascriptInterface(new WebAppInterface(this), "Android");
 
         WebSettings settings = googleTranslateEditView.getSettings();

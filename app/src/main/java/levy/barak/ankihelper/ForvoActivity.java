@@ -52,7 +52,7 @@ public class ForvoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forvo);
 
-        final WebView forvoWebView = findViewById(R.id.forvoWebView);
+        final WebView forvoWebView = (WebView) findViewById(R.id.forvoWebView);
 
         forvoWebView.setDownloadListener(new DownloadHandler(forvoWebView));
 
