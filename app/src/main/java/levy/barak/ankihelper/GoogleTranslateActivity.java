@@ -11,6 +11,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -18,6 +19,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 
 import levy.barak.ankihelper.utils.FileUtils;
+import levy.barak.ankihelper.utils.GermanUtils;
 
 public class GoogleTranslateActivity extends Activity {
     public class WebAppInterface {
@@ -30,33 +32,45 @@ public class GoogleTranslateActivity extends Activity {
         @JavascriptInterface
         public void catchGermanWord(String germanWord, String type) {
             AnkiHelperApplication.currentWord.germanWord = germanWord;
+            AnkiHelperApplication.currentWord.type = GermanUtils.translateTypes(type.substring(0, type.length() - 1)); // Remove the '\n'
             startActivity(new Intent(mContext, GoogleImagesActivity.class));
 
             new Thread(() -> {
                 final StringBuilder builder = new StringBuilder();
 
+                // Search for the word
                 try {
-                    Document doc = Jsoup.connect("https://de.wiktionary.org/wiki/" + TranslateActivity.getGermanWordWithoutPrefix()).get();
-
-                    Elements ipas = doc.select(".ipa");
-
-                    if (ipas.size() == 0) {
-                        mContext.runOnUiThread(() -> Toast.makeText(mContext, "Couldn't find an IPA. Wrong word perhaps?", Toast.LENGTH_LONG).show());
-                        return;
-                    }
-
-                    AnkiHelperApplication.currentWord.ipa = ipas.first().text();
-
-                    Elements wordInASentences = doc.select("[title=Verwendungsbeispielsätze]").first().nextElementSibling().children();
-
-                    for (int i = 0; i < wordInASentences.size(); i++) {
-                        AnkiHelperApplication.currentWord.wordInASentences.add(wordInASentences.get(i).html());
-                    }
+                    getWordInfoFromWiki(TranslateActivity.getGermanWordWithoutPrefix());
                 } catch (IOException e) {
-                    builder.append("Error : ").append(e.getMessage()).append("\n");
+                    // If there are issues, try the lower case version
+                    try {
+                        getWordInfoFromWiki(TranslateActivity.getGermanWordWithoutPrefix().toLowerCase());
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }).start();
 
+        }
+
+        public void getWordInfoFromWiki(String word) throws IOException {
+            Connection connection = Jsoup.connect("https://de.wiktionary.org/wiki/" + word);
+            Document doc = connection.get();
+
+            Elements ipas = doc.select(".ipa");
+
+            if (ipas.size() == 0) {
+                mContext.runOnUiThread(() -> Toast.makeText(mContext, "Couldn't find an IPA. Wrong word perhaps?", Toast.LENGTH_LONG).show());
+                return;
+            }
+
+            AnkiHelperApplication.currentWord.ipa = ipas.first().text();
+
+            Elements wordInASentences = doc.select("[title=Verwendungsbeispielsätze]").first().nextElementSibling().children();
+
+            for (int i = 0; i < wordInASentences.size(); i++) {
+                AnkiHelperApplication.currentWord.wordInASentences.add(wordInASentences.get(i).html());
+            }
         }
     }
 

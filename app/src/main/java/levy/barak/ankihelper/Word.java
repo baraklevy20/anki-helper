@@ -14,6 +14,7 @@ public final class Word {
     public ArrayList<String> soundsUrl;
     public String ipa;
     public String personalConnection;
+    public String type;
     public ArrayList<String> wordInASentences;
 
     public Word(String englishWord) {

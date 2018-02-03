@@ -73,11 +73,11 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         Word word = mWords.get(position);
 
         // Set word and IPA
-        holder.word.setText(word.germanWord);
+        holder.word.setText(word.germanWord + " (" + word.type + ")");
         holder.ipa.setText(word.ipa);
 
         // Set examples
-        if (word.wordInASentences != null) {
+        if (word.wordInASentences != null && word.wordInASentences.size() > 0) {
             holder.examples.setText(Html.fromHtml(word.wordInASentences.get(holder.currentExampleIndex), Html.FROM_HTML_MODE_COMPACT));
 
             if (word.wordInASentences.size() > 1) {

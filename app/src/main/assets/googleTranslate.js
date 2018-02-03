@@ -23,7 +23,7 @@
                     var splitWord = allWords[i].firstChild.firstChild.childNodes;
 
                     for (var j = 0; j < splitWord.length; j++) {
-                        if (splitWord[j].innerHTML === word) {
+                        if (splitWord[j].innerHTML.toLowerCase() === word.toLowerCase()) {
                             found = allWords[i];
                             break;
                         }
