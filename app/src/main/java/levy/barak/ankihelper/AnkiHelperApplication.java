@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 public class AnkiHelperApplication extends Application {
     public static final String PREFERENCES = "levy.barak.ankihelper";
-    public static final String PREFERENCES_CURRENT_WORD = "levy.barak.ankihelper.CURRENT_WORD";
 
     private static SharedPreferences prefs;
 
@@ -48,8 +47,6 @@ public class AnkiHelperApplication extends Application {
         }
 
         // Convert to a list
-        Arrays.stream(words).forEach(w -> {
-            allWords.add(w);
-        });
+        Arrays.stream(words).forEach(w -> allWords.add(w));
     }
 }

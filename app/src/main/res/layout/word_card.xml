@@ -4,14 +4,13 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="288dp"
     android:layout_gravity="center"
     android:layout_margin="5dp"
     card_view:cardCornerRadius="4dp">
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -21,42 +20,72 @@
             android:layout_height="144dp"
             android:baselineAlignBottom="false"
             android:scaleType="fitXY"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:visibility="visible"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/word_list_word"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#20000000"
+            android:background="#40000000"
             android:fontFamily="sans-serif-thin"
             android:paddingBottom="8dp"
             android:paddingStart="8dp"
             android:text="sample"
             android:textColor="@android:color/white"
             android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/word_list_image"
-            app:layout_constraintStart_toStartOf="@+id/word_list_image" />
+            card_view:layout_constraintBottom_toBottomOf="@+id/word_list_image"
+            card_view:layout_constraintStart_toStartOf="@+id/word_list_image" />
 
         <TextView
             android:id="@+id/word_list_ipa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="sample"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/word_list_image" />
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintStart_toEndOf="@+id/word_list_sound"
+            card_view:layout_constraintTop_toTopOf="@+id/word_list_sound" />
 
         <Button
             android:id="@+id/word_list_sound"
             style="@android:style/Widget.Material.Light.Button.Borderless.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
             android:text="Play"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/word_list_examples"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="TextView"
+            card_view:layout_constraintBottom_toTopOf="@+id/word_list_sound"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/word_list_word" />
+
+        <ImageButton
+            android:id="@+id/word_remove_button"
+            style="@android:style/Widget.Material.Light.ImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:src="@android:drawable/ic_menu_delete"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toEndOf="parent" />
 
 
     </android.support.constraint.ConstraintLayout>

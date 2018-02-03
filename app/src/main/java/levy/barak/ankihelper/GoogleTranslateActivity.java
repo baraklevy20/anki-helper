@@ -46,6 +46,12 @@ public class GoogleTranslateActivity extends Activity {
                     }
 
                     AnkiHelperApplication.currentWord.ipa = ipas.first().text();
+
+                    Elements wordInASentences = doc.select("[title=Verwendungsbeispielsätze]").first().nextElementSibling().children();
+
+                    for (int i = 0; i < wordInASentences.size(); i++) {
+                        AnkiHelperApplication.currentWord.wordInASentences.add(wordInASentences.get(i).html());
+                    }
                 } catch (IOException e) {
                     builder.append("Error : ").append(e.getMessage()).append("\n");
                 }

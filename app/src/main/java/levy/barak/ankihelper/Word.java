@@ -14,11 +14,13 @@ public final class Word {
     public ArrayList<String> soundsUrl;
     public String ipa;
     public String personalConnection;
+    public ArrayList<String> wordInASentences;
 
     public Word(String englishWord) {
         this.id = (long)(Math.random() * Long.MAX_VALUE);
         this.englishWord = englishWord;
         this.imagesUrl = new ArrayList<>();
         this.soundsUrl = new ArrayList<>();
+        this.wordInASentences = new ArrayList<>();
     }
 }
