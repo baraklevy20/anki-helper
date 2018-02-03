@@ -28,7 +28,7 @@ public class GoogleTranslateActivity extends Activity {
         }
 
         @JavascriptInterface
-        public void catchGermanWord(String germanWord) {
+        public void catchGermanWord(String germanWord, String type) {
             AnkiHelperApplication.currentWord.germanWord = germanWord;
             startActivity(new Intent(mContext, GoogleImagesActivity.class));
 
