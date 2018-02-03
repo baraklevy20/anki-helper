@@ -72,7 +72,6 @@ public class AnkiDatabase {
                 .replace("$(models)", models)
                 .replace("$(decks)", decks)
                 .replace("$(decksConfigurations)", dconf);
-
     }
 
     public void insertCard(int order, long noteId) {
@@ -86,7 +85,7 @@ public class AnkiDatabase {
     }
 
     public void insertNote(Word word) throws NoSuchAlgorithmException {
-        String fullText = getFullText(word);
+        String fullText = getFullText(word).replace("\'", "\'\'");
 
         db.execSQL(String.format("INSERT into notes VALUES ('%d', '%s', '1366716141610', '%d', '-1', '', '%s', '%s', '%s', '0', '')",
                 word.id,
@@ -100,10 +99,20 @@ public class AnkiDatabase {
 
     public String getFullText(Word word) {
         String germanWord = word.germanWord.replace(" ", "&nbsp");
-        String image = "<img src=\"anki_helper_image_" + word.id + "_0\" />";
-        String personal = "";
+        String image = "<img src=\"anki_helper_image_" + word.id + "_0\" /><div>" + word.type + "</div>";
+        String personal = word.type;
         String soundAndIpa = "[sound:anki_helper_sound_" + word.id + "_0]<div>" + word.ipa + "</div>";
         String spelling = "";
+
+        if (word.wordInASentences != null) {
+            soundAndIpa += "<div><dl>";
+
+            for (String sentence : word.wordInASentences) {
+                soundAndIpa += "<dd>" + sentence + "</dd>";
+            }
+
+            soundAndIpa += "</dl></div>";
+        }
 
         char separator = 0x1F;
         return germanWord + separator + image + separator + personal + separator + soundAndIpa + separator + spelling;
