@@ -1,8 +1,7 @@
-package levy.barak.ankihelper;
+package levy.barak.ankihelper.vocabulary_screen;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
@@ -19,10 +18,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.R;
+import levy.barak.ankihelper.anki.Word;
 import levy.barak.ankihelper.utils.ImageUtils;
 
 /**
@@ -41,7 +42,6 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         private ImageView image;
         private ImageButton removeButton;
         private int currentExampleIndex;
-        private View view;
 
         public DataObjectHolder(View itemView) {
             super(itemView);
@@ -73,7 +73,7 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         Word word = mWords.get(position);
 
         // Set word and IPA
-        holder.word.setText(word.germanWord + " (" + word.type + ")");
+        holder.word.setText(word.germanWord + " (" + word.type.getGermanTranslation() + ")");
         holder.ipa.setText(word.ipa);
 
         // Set examples
@@ -92,7 +92,7 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         for (String imageUrl : word.imagesUrl) {
             Bitmap bitmap = decodeSampledBitmap(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + imageUrl, ImageUtils.dipToPixels(mContext, 288), ImageUtils.dipToPixels(mContext, 144));
             holder.image.setImageBitmap(bitmap);
-            holder.image.setOnClickListener(v -> ((TranslateActivity) mContext).zoomImageFromThumb(holder.image, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + imageUrl));
+            holder.image.setOnClickListener(v -> ((VocabularyListActivity) mContext).zoomImageFromThumb(holder.image, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + imageUrl));
         }
 
         // Set sound

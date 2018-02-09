@@ -1,5 +1,7 @@
 package levy.barak.ankihelper.utils;
 
+import levy.barak.ankihelper.AnkiHelperApplication;
+
 /**
  * Created by baraklev on 2/3/2018.
  */
@@ -28,4 +30,8 @@ public class GermanUtils {
         }
     }
 
+    public static String getGermanWordWithoutPrefix() {
+        String[] split = AnkiHelperApplication.currentWord.germanWord.split(" ");
+        return split[split.length - 1];
+    }
 }

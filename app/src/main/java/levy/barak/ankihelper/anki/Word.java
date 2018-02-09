@@ -1,4 +1,4 @@
-package levy.barak.ankihelper;
+package levy.barak.ankihelper.anki;
 
 import java.util.ArrayList;
 
@@ -15,7 +15,7 @@ public final class Word {
     public ArrayList<String> imagesUrl;
     public ArrayList<String> soundsUrl;
     public String ipa;
-    public String personalConnection;
+    public String additionalInformation;
     public GermanUtils.WordCategory type;
     public ArrayList<String> wordInASentences;
 

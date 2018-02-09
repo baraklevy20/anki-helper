@@ -7,9 +7,8 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+
+import levy.barak.ankihelper.anki.Word;
 
 /**
  * Created by baraklev on 12/2/2017.

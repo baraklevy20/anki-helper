@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".TranslateActivity">
+        <activity android:name=".vocabulary_screen.VocabularyListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,14 +22,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GoogleTranslateActivity"
-            android:parentActivityName=".TranslateActivity" />
+            android:name=".vocabulary_screen.VocabularyActivity"
+            android:parentActivityName=".vocabulary_screen.VocabularyListActivity" />
         <activity
-            android:name=".GoogleImagesActivity"
-            android:parentActivityName=".GoogleTranslateActivity" />
+            android:name=".vocabulary_screen.GoogleImagesFragment"
+            android:parentActivityName=".vocabulary_screen.VocabularyActivity" />
         <activity
-            android:name=".ForvoActivity"
-            android:parentActivityName=".GoogleImagesActivity" />
+            android:name=".vocabulary_screen.ForvoFragment"
+            android:parentActivityName=".vocabulary_screen.GoogleImagesFragment" />
     </application>
 
 </manifest>

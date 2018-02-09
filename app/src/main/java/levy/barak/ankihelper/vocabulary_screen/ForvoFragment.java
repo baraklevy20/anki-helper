@@ -1,13 +1,17 @@
-package levy.barak.ankihelper;
+package levy.barak.ankihelper.vocabulary_screen;
 
-import android.app.Activity;
 import android.app.DownloadManager;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.WebResourceRequest;
@@ -16,10 +20,13 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 
-public class ForvoActivity extends Activity {
+import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.R;
+import levy.barak.ankihelper.utils.GermanUtils;
+
+public class ForvoFragment extends Fragment {
     public class DownloadHandler implements DownloadListener {
         WebView forvoWebView;
 
@@ -43,16 +50,16 @@ public class ForvoActivity extends Activity {
             AnkiHelperApplication.currentWord.soundsUrl.add(downloadName);
             AnkiHelperApplication.allWords.add(AnkiHelperApplication.currentWord);
             AnkiHelperApplication.writeWords();
-            startActivity(new Intent(forvoWebView.getContext(), TranslateActivity.class));
+            startActivity(new Intent(forvoWebView.getContext(), VocabularyListActivity.class));
         }
     }
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_forvo);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        View fragment = inflater.inflate(R.layout.fragment_vocabulary_forvo, container, false);
 
-        final WebView forvoWebView = (WebView) findViewById(R.id.forvoWebView);
+        final WebView forvoWebView = (WebView) fragment.findViewById(R.id.forvoWebView);
         forvoWebView.setDownloadListener(new DownloadHandler(forvoWebView));
 
         WebSettings settings = forvoWebView.getSettings();
@@ -63,7 +70,7 @@ public class ForvoActivity extends Activity {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 try {
                     String url = java.net.URLDecoder.decode(request.getUrl().toString().toLowerCase(), "UTF-8");
-                    String word = TranslateActivity.getGermanWordWithoutPrefix().toLowerCase();
+                    String word = GermanUtils.getGermanWordWithoutPrefix().toLowerCase();
 
                     Log.i("requestedUrl", url);
 
@@ -77,12 +84,14 @@ public class ForvoActivity extends Activity {
                     e.printStackTrace();
                 }
 
-                Toast.makeText(getApplicationContext(), "Couldn't decode the URL in Forvo", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Couldn't decode the URL in Forvo", Toast.LENGTH_LONG).show();
                 return false;
             }
         });
 
-        forvoWebView.loadUrl("https://forvo.com/word/de/" + TranslateActivity.getGermanWordWithoutPrefix() + "/");
+        forvoWebView.loadUrl("https://forvo.com/word/de/" + GermanUtils.getGermanWordWithoutPrefix() + "/");
         CookieManager.getInstance().setAcceptCookie(true);
+
+        return fragment;
     }
 }

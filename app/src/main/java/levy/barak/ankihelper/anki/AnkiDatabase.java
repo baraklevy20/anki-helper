@@ -1,4 +1,4 @@
-package levy.barak.ankihelper.anki_database;
+package levy.barak.ankihelper.anki;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -22,7 +22,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import levy.barak.ankihelper.AnkiHelperApplication;
-import levy.barak.ankihelper.Word;
 import levy.barak.ankihelper.utils.FileUtils;
 
 /**

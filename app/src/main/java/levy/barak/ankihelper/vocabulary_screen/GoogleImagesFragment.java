@@ -1,30 +1,35 @@
-package levy.barak.ankihelper;
+package levy.barak.ankihelper.vocabulary_screen;
 
-import android.app.Activity;
 import android.app.DownloadManager;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 
+import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.R;
 import levy.barak.ankihelper.utils.FileUtils;
+import levy.barak.ankihelper.utils.GermanUtils;
 
-public class GoogleImagesActivity extends Activity {
+public class GoogleImagesFragment extends Fragment {
     public class WebAppInterface {
-        private Context mContext;
+        private Fragment mContext;
 
-        WebAppInterface(Context c) {
+        WebAppInterface(Fragment c) {
             mContext = c;
         }
 
@@ -34,7 +39,8 @@ public class GoogleImagesActivity extends Activity {
             String[] attributes = href.split("&");
             String imageUrl = java.net.URLDecoder.decode(attributes[0].split("=")[1], "UTF-8");
 
-            startActivity(new Intent(mContext, ForvoActivity.class));
+            // Move on to the next screen
+            moveToNextScreen();
 
             new Thread(() -> {
                 // Download it
@@ -43,17 +49,18 @@ public class GoogleImagesActivity extends Activity {
                 request.allowScanningByMediaScanner();
                 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "anki_helper/" + downloadName);
                 AnkiHelperApplication.currentWord.imagesUrl.add(downloadName);
-                DownloadManager dm = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
+                DownloadManager dm = (DownloadManager) mContext.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
                 dm.enqueue(request);
             }).start();
         }
     }
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_google_images);
 
-        final WebView googleImagesWebView = (WebView) findViewById(R.id.googleImagesWebView);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        View fragment = inflater.inflate(R.layout.fragment_vocabulary_google_images, container, false);
+
+        final WebView googleImagesWebView = (WebView) fragment.findViewById(R.id.googleImagesWebView);
 
         googleImagesWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
 
@@ -79,10 +86,19 @@ public class GoogleImagesActivity extends Activity {
 
         googleImagesWebView.loadUrl(
                 "https://www.google.de/search?q=" +
-                TranslateActivity.getGermanWordWithoutPrefix() +
-                "&hl=de&tbo=d&site=imghp&tbm=isch&gwd_rd=ssl"
+                        GermanUtils.getGermanWordWithoutPrefix() +
+                        "&hl=de&tbo=d&site=imghp&tbm=isch&gwd_rd=ssl"
         );
 
+        return fragment;
+    }
 
+    public void moveToNextScreen() {
+        ForvoFragment newFragment = new ForvoFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        transaction.replace(R.id.fragmentsContainer, newFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

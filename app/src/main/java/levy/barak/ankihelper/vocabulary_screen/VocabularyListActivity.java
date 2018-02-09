@@ -1,4 +1,4 @@
-package levy.barak.ankihelper;
+package levy.barak.ankihelper.vocabulary_screen;
 
 import android.Manifest;
 import android.animation.Animator;
@@ -7,7 +7,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -20,7 +19,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -30,9 +28,12 @@ import android.widget.ToggleButton;
 
 import java.io.File;
 
-import levy.barak.ankihelper.anki_database.AnkiDatabase;
+import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.R;
+import levy.barak.ankihelper.anki.AnkiDatabase;
+import levy.barak.ankihelper.anki.Word;
 
-public class TranslateActivity extends Activity {
+public class VocabularyListActivity extends Activity {
     private Animator mCurrentAnimator;
     private int mShortAnimationDuration;
 
@@ -48,7 +49,7 @@ public class TranslateActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_translate);
+        setContentView(R.layout.activity_vocabulary_list);
 
         // Ask for permissions
         if (checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
@@ -93,7 +94,7 @@ public class TranslateActivity extends Activity {
         }
         else {
             AnkiHelperApplication.currentWord = new Word(editText.getText().toString());
-            startActivity(new Intent(this, GoogleTranslateActivity.class));
+            startActivity(new Intent(this, VocabularyActivity.class));
         }
     }
 
@@ -119,11 +120,6 @@ public class TranslateActivity extends Activity {
             Toast.makeText(this, "Done!", Toast.LENGTH_SHORT).show();
         })
                 .setNegativeButton("No", null).show();
-    }
-
-    public static String getGermanWordWithoutPrefix() {
-        String[] split = AnkiHelperApplication.currentWord.germanWord.split(" ");
-        return split[split.length - 1];
     }
 
     public void zoomImageFromThumb(final View thumbView, String imagePath) {

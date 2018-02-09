@@ -1,9 +1,13 @@
-package levy.barak.ankihelper;
+package levy.barak.ankihelper.vocabulary_screen;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -18,14 +22,20 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 
+import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.R;
 import levy.barak.ankihelper.utils.FileUtils;
 import levy.barak.ankihelper.utils.GermanUtils;
 
-public class GoogleTranslateActivity extends Activity {
-    public class WebAppInterface {
-        private GoogleTranslateActivity mContext;
+/**
+ * Created by baraklev on 2/9/2018.
+ */
 
-        WebAppInterface(GoogleTranslateActivity c) {
+public class GoogleTranslateFragment extends Fragment {
+    public class WebAppInterface {
+        private GoogleTranslateFragment mContext;
+
+        WebAppInterface(GoogleTranslateFragment c) {
             mContext = c;
         }
 
@@ -34,21 +44,36 @@ public class GoogleTranslateActivity extends Activity {
             AnkiHelperApplication.currentWord.type = GermanUtils.WordCategory.valueOf(type.substring(0, type.length() - 1).toUpperCase()); // Remove the '\n'
 
             // Set the german word to either capitalized or lower cased
-            AnkiHelperApplication.currentWord.germanWord = AnkiHelperApplication.currentWord.type.isUppercase() ?
-                    germanWord.substring(0, 1).toUpperCase() + germanWord.substring(1) :
-                    germanWord.toLowerCase();
+            if (AnkiHelperApplication.currentWord.type.isUppercase()) {
+                String[] split = germanWord.split(" ");
 
-            startActivity(new Intent(mContext, GoogleImagesActivity.class));
+                AnkiHelperApplication.currentWord.germanWord = split[0] + " " +
+                        split[1].substring(0, 1).toUpperCase() + split[1].substring(1);
+            }
+            else {
+                AnkiHelperApplication.currentWord.germanWord = germanWord.toLowerCase();
+            }
+
+            // Move to the google images activity
+            moveToNextScreen();
 
             new Thread(() -> {
                 // Get additional information about the word
                 try {
-                    getWordInformationFromWiki(TranslateActivity.getGermanWordWithoutPrefix());
+                    getWordInformationFromWiki(GermanUtils.getGermanWordWithoutPrefix());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }).start();
+        }
 
+        public void moveToNextScreen() {
+            GoogleImagesFragment newFragment = new GoogleImagesFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            transaction.replace(R.id.fragmentsContainer, newFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
         }
 
         public void getWordInformationFromWiki(String word) throws IOException {
@@ -58,7 +83,7 @@ public class GoogleTranslateActivity extends Activity {
             Elements ipas = doc.select(".ipa");
 
             if (ipas.size() == 0) {
-                mContext.runOnUiThread(() -> Toast.makeText(mContext, "Couldn't find an IPA. Wrong word perhaps?", Toast.LENGTH_LONG).show());
+                mContext.getActivity().runOnUiThread(() -> Toast.makeText(mContext.getActivity(), "Couldn't find an IPA. Wrong word perhaps?", Toast.LENGTH_LONG).show());
                 return;
             }
 
@@ -72,12 +97,12 @@ public class GoogleTranslateActivity extends Activity {
         }
     }
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_google_translate);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        View fragment = inflater.inflate(R.layout.fragment_vocabulary_google_translate, container, false);
 
-        final WebView googleTranslateEditView = (WebView) findViewById(R.id.googleTranslateWebView);
+        final WebView googleTranslateEditView = (WebView) fragment.findViewById(R.id.googleTranslateWebView);
         googleTranslateEditView.addJavascriptInterface(new WebAppInterface(this), "Android");
 
         WebSettings settings = googleTranslateEditView.getSettings();
@@ -101,5 +126,7 @@ public class GoogleTranslateActivity extends Activity {
         });
 
         googleTranslateEditView.loadUrl("https://translate.google.com/m/translate#en/de/" + AnkiHelperApplication.currentWord.englishWord);
+
+        return fragment;
     }
 }
