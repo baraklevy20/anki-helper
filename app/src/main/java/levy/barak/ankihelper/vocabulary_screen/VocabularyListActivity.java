@@ -84,6 +84,12 @@ public class VocabularyListActivity extends Activity {
         // Used for the zoom animation
         mShortAnimationDuration = getResources().getInteger(
                 android.R.integer.config_shortAnimTime);
+
+        // Disable the generate/clear buttons if necessary
+        if (AnkiHelperApplication.allWords.size() == 0) {
+            findViewById(R.id.generateCardsButton).setEnabled(false);
+            findViewById(R.id.clearButton).setEnabled(false);
+        }
     }
 
     public void onTranslateClick(View view) {
@@ -276,5 +282,9 @@ public class VocabularyListActivity extends Activity {
         // Refresh the list
         RecyclerView cardsList = (RecyclerView) findViewById(R.id.cardsList);
         cardsList.getAdapter().notifyDataSetChanged();
+
+        // Disable generate and clear buttons
+        findViewById(R.id.generateCardsButton).setEnabled(false);
+        findViewById(R.id.clearButton).setEnabled(false);
     }
 }
