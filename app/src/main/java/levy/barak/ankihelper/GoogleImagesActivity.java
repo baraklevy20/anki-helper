@@ -22,14 +22,12 @@ import levy.barak.ankihelper.utils.FileUtils;
 
 public class GoogleImagesActivity extends Activity {
     public class WebAppInterface {
-        Context mContext;
+        private Context mContext;
 
-        /** Instantiate the interface and set the context */
         WebAppInterface(Context c) {
             mContext = c;
         }
 
-        /** Show a toast from the web page */
         @JavascriptInterface
         public void catchHref(String href) throws UnsupportedEncodingException {
             String[] parts = href.split("\\?");
@@ -63,6 +61,8 @@ public class GoogleImagesActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         googleImagesWebView.setWebViewClient(new WebViewClient() {
+            boolean isScriptAttached = false;
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Log.i("requestedUrl", request.getUrl().toString());
@@ -70,7 +70,10 @@ public class GoogleImagesActivity extends Activity {
             }
 
             public void onPageFinished(WebView view, String url) {
-                googleImagesWebView.evaluateJavascript(FileUtils.getFileContent(googleImagesWebView.getContext(), "googleImages.js"), null);
+                if (!isScriptAttached) {
+                    googleImagesWebView.evaluateJavascript(FileUtils.getFileContent(googleImagesWebView.getContext(), "googleImages.js"), null);
+                    isScriptAttached = true;
+                }
             }
         });
 

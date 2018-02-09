@@ -53,10 +53,7 @@ public class ForvoActivity extends Activity {
         setContentView(R.layout.activity_forvo);
 
         final WebView forvoWebView = (WebView) findViewById(R.id.forvoWebView);
-
         forvoWebView.setDownloadListener(new DownloadHandler(forvoWebView));
-
-
 
         WebSettings settings = forvoWebView.getSettings();
         settings.setJavaScriptEnabled(true);

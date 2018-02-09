@@ -85,6 +85,8 @@ public class GoogleTranslateActivity extends Activity {
         settings.setDomStorageEnabled(true);
 
         googleTranslateEditView.setWebViewClient(new WebViewClient() {
+            boolean isScriptAttached = false;
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Log.i("requestedUrl", request.getUrl().toString());
@@ -92,8 +94,9 @@ public class GoogleTranslateActivity extends Activity {
             }
 
             public void onPageFinished(WebView view, String url) {
-                //mIsInTranslate = true;
-                googleTranslateEditView.evaluateJavascript(FileUtils.getFileContent(googleTranslateEditView.getContext(), "googleTranslate.js"), null);
+                if (!isScriptAttached) {
+                    googleTranslateEditView.evaluateJavascript(FileUtils.getFileContent(googleTranslateEditView.getContext(), "googleTranslate.js"), null);
+                }
             }
         });
 
