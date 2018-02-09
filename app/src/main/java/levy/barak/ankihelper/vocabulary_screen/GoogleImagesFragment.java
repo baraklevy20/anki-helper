@@ -4,6 +4,7 @@ import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -68,7 +69,7 @@ public class GoogleImagesFragment extends Fragment {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         googleImagesWebView.setWebViewClient(new WebViewClient() {
-            boolean isScriptAttached = false;
+            int resourcesLoaded = 0;
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -76,11 +77,16 @@ public class GoogleImagesFragment extends Fragment {
                 return true;
             }
 
-            public void onPageFinished(WebView view, String url) {
-                if (!isScriptAttached) {
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                super.onLoadResource(view, url);
+
+                // We only attach the script AFTER we load the first resource which is the main URL
+                if (resourcesLoaded == 1) {
                     googleImagesWebView.evaluateJavascript(FileUtils.getFileContent(googleImagesWebView.getContext(), "googleImages.js"), null);
-                    isScriptAttached = true;
                 }
+
+                resourcesLoaded++;
             }
         });
 

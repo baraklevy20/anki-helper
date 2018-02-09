@@ -52,7 +52,7 @@ public class GoogleTranslateFragment extends Fragment {
                             split[1].substring(0, 1).toUpperCase() + split[1].substring(1);
                 }
                 else {
-                    AnkiHelperApplication.currentWord.germanWord = split[0].toUpperCase();
+                    AnkiHelperApplication.currentWord.germanWord = split[0].substring(0, 1).toUpperCase() + split[0].substring(1);
                 }
             }
             else {
@@ -115,18 +115,24 @@ public class GoogleTranslateFragment extends Fragment {
         settings.setDomStorageEnabled(true);
 
         googleTranslateEditView.setWebViewClient(new WebViewClient() {
-            boolean isScriptAttached = false;
+            int resourcesLoaded = 0;
+
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                super.onLoadResource(view, url);
+
+                // We only attach the script AFTER we load the first resource which is the main URL
+                if (resourcesLoaded == 1) {
+                    googleTranslateEditView.evaluateJavascript(FileUtils.getFileContent(googleTranslateEditView.getContext(), "googleTranslate.js"), null);
+                }
+
+                resourcesLoaded++;
+            }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Log.i("requestedUrl", request.getUrl().toString());
                 return true;
-            }
-
-            public void onPageFinished(WebView view, String url) {
-                if (!isScriptAttached) {
-                    googleTranslateEditView.evaluateJavascript(FileUtils.getFileContent(googleTranslateEditView.getContext(), "googleTranslate.js"), null);
-                }
             }
         });
 
