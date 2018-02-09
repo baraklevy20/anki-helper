@@ -69,12 +69,12 @@ public class GoogleImagesFragment extends Fragment {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         googleImagesWebView.setWebViewClient(new WebViewClient() {
-            int resourcesLoaded = 0;
+            int resourcesLoaded;
 
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                Log.i("requestedUrl", request.getUrl().toString());
-                return true;
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                resourcesLoaded = 0; // This is here because if the user searches for another image, we want to reset the resources loaded count
             }
 
             @Override
