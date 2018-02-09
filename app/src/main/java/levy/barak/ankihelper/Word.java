@@ -2,6 +2,8 @@ package levy.barak.ankihelper;
 
 import java.util.ArrayList;
 
+import levy.barak.ankihelper.utils.GermanUtils;
+
 /**
  * Created by baraklev on 11/27/2017.
  */
@@ -14,7 +16,7 @@ public final class Word {
     public ArrayList<String> soundsUrl;
     public String ipa;
     public String personalConnection;
-    public String type;
+    public GermanUtils.WordCategory type;
     public ArrayList<String> wordInASentences;
 
     public Word(String englishWord) {

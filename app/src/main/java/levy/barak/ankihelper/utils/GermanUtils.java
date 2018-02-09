@@ -5,18 +5,27 @@ package levy.barak.ankihelper.utils;
  */
 
 public class GermanUtils {
-    public static String translateTypes(String type) {
-        switch (type.toLowerCase()) {
-            case "noun":
-                return "Substantiv";
-            case "verb":
-                return "Verb";
-            case "adjective":
-                return "Adjektiv";
-            case "adverb":
-                return "Adverb";
-            default:
-                return type;
+    public enum WordCategory {
+        NOUN("Substantiv", true),
+        VERB("Verb", false),
+        ADJECTIVE("Adjektiv", false),
+        ADVERB("Adverb", false);
+
+        private String germanTranslation;
+        private boolean isUppercase; // Will be used in accessing Wiktionary
+
+        WordCategory(String germanTranslation, boolean isUppercase) {
+            this.germanTranslation = germanTranslation;
+            this.isUppercase = isUppercase;
+        }
+
+        public String getGermanTranslation() {
+            return germanTranslation;
+        }
+
+        public boolean isUppercase() {
+            return isUppercase;
         }
     }
+
 }

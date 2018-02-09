@@ -31,29 +31,27 @@ public class GoogleTranslateActivity extends Activity {
 
         @JavascriptInterface
         public void catchGermanWord(String germanWord, String type) {
-            AnkiHelperApplication.currentWord.germanWord = germanWord;
-            AnkiHelperApplication.currentWord.type = GermanUtils.translateTypes(type.substring(0, type.length() - 1)); // Remove the '\n'
+            AnkiHelperApplication.currentWord.type = GermanUtils.WordCategory.valueOf(type.substring(0, type.length() - 1).toUpperCase()); // Remove the '\n'
+
+            // Set the german word to either capitalized or lower cased
+            AnkiHelperApplication.currentWord.germanWord = AnkiHelperApplication.currentWord.type.isUppercase() ?
+                    germanWord.substring(0, 1).toUpperCase() + germanWord.substring(1) :
+                    germanWord.toLowerCase();
+
             startActivity(new Intent(mContext, GoogleImagesActivity.class));
 
             new Thread(() -> {
-                final StringBuilder builder = new StringBuilder();
-
-                // Search for the word
+                // Get additional information about the word
                 try {
-                    getWordInfoFromWiki(TranslateActivity.getGermanWordWithoutPrefix());
+                    getWordInformationFromWiki(TranslateActivity.getGermanWordWithoutPrefix());
                 } catch (IOException e) {
-                    // If there are issues, try the lower case version
-                    try {
-                        getWordInfoFromWiki(TranslateActivity.getGermanWordWithoutPrefix().toLowerCase());
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
+                    e.printStackTrace();
                 }
             }).start();
 
         }
 
-        public void getWordInfoFromWiki(String word) throws IOException {
+        public void getWordInformationFromWiki(String word) throws IOException {
             Connection connection = Jsoup.connect("https://de.wiktionary.org/wiki/" + word);
             Document doc = connection.get();
 
@@ -92,27 +90,6 @@ public class GoogleTranslateActivity extends Activity {
                 Log.i("requestedUrl", request.getUrl().toString());
                 return true;
             }
-
-//            @Override
-//            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-//                //Log.i("requestedUrl23", request.getUrl());
-//
-//                Log.i("requestedUrl2", request.getUrl().toString());
-////                if (request.getUrl().toString().startsWith("https://translate.google.com/translate_a/single")) {
-////                    if (!mIsInTranslate) {
-////                        mIsInTranslate = true;
-////                    }
-////                    else {
-////                        return new WebResourceResponse("", "", null);
-////                    }
-////                }
-//
-//                if (mIsInTranslate) {
-//                    return new WebResourceResponse("", "", null);
-//                }
-//
-//                return null;
-//            }
 
             public void onPageFinished(WebView view, String url) {
                 //mIsInTranslate = true;

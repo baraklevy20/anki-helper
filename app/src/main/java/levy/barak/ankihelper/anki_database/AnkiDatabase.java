@@ -99,8 +99,8 @@ public class AnkiDatabase {
 
     public String getFullText(Word word) {
         String germanWord = word.germanWord.replace(" ", "&nbsp");
-        String image = "<img src=\"anki_helper_image_" + word.id + "_0\" /><div>" + word.type + "</div>";
-        String personal = word.type;
+        String image = "<img src=\"anki_helper_image_" + word.id + "_0\" /><div>" + word.type.getGermanTranslation() + "</div>";
+        String personal = word.type.getGermanTranslation();
         String soundAndIpa = "[sound:anki_helper_sound_" + word.id + "_0]<div>" + word.ipa + "</div>";
         String spelling = "";
 
