@@ -99,26 +99,31 @@ public class TranslateActivity extends Activity {
 
     public void onClearClick(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-        builder.setMessage("Are you sure you want to remove the cards?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
+        builder.setMessage("Are you sure you want to remove the cards?").setPositiveButton("Yes", (dialog, which) -> clearList())
+                .setNegativeButton("No", null).show();
     }
 
     public void onGenerateCardsClick(View view) {
-        boolean isDebug = ((ToggleButton)findViewById(R.id.debugButton)).isChecked();
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        builder.setMessage("Are you sure you want to generate the cards? This would remove the cards and generate a ZIP for Anki.")
+                .setPositiveButton("Yes", (dialog, which) -> {
+            boolean isDebug = ((ToggleButton)findViewById(R.id.debugButton)).isChecked();
 
-        AnkiDatabase ankiDatabase = new AnkiDatabase(this, isDebug);
+            AnkiDatabase ankiDatabase = new AnkiDatabase(this, isDebug);
 
-        ankiDatabase.generateDatabase();
+            ankiDatabase.generateDatabase();
 
-        // Clear everything
-        onClearClick(view);
+            // Clear everything
+            clearList();
 
-        Toast.makeText(this, "Done!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Done!", Toast.LENGTH_SHORT).show();
+        })
+                .setNegativeButton("No", null).show();
     }
 
     public static String getGermanWordWithoutPrefix() {
-        String[] splitted = AnkiHelperApplication.currentWord.germanWord.split(" ");
-        return splitted[splitted.length - 1];
+        String[] split = AnkiHelperApplication.currentWord.germanWord.split(" ");
+        return split[split.length - 1];
     }
 
     public void zoomImageFromThumb(final View thumbView, String imagePath) {
@@ -127,8 +132,6 @@ public class TranslateActivity extends Activity {
         if (mCurrentAnimator != null) {
             mCurrentAnimator.cancel();
         }
-
-
 
         // Load the high-resolution "zoomed-in" image.
         final ImageView expandedImageView = (ImageView) findViewById(R.id.expanded_image);
@@ -261,32 +264,21 @@ public class TranslateActivity extends Activity {
         });
     }
 
-    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            switch (which){
-                case DialogInterface.BUTTON_POSITIVE:
-                    // Reset the words to 0
-                    AnkiHelperApplication.allWords.clear();
-                    AnkiHelperApplication.writeWords();
-                    File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
-                            "/anki_helper");
+    public void clearList() {
+        // Reset the words to 0
+        AnkiHelperApplication.allWords.clear();
+        AnkiHelperApplication.writeWords();
+        File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
+                "/anki_helper");
 
-                    if (directory.exists()) {
-                        for (File file : directory.listFiles()) {
-                            file.delete();
-                        }
-                    }
-
-                    // Refresh this activity
-                    finish();
-                    startActivity(getIntent());
-                    break;
-
-                case DialogInterface.BUTTON_NEGATIVE:
-                    //No button clicked
-                    break;
+        if (directory.exists()) {
+            for (File file : directory.listFiles()) {
+                file.delete();
             }
         }
-    };
+
+        // Refresh the list
+        RecyclerView cardsList = (RecyclerView) findViewById(R.id.cardsList);
+        cardsList.getAdapter().notifyDataSetChanged();
+    }
 }
