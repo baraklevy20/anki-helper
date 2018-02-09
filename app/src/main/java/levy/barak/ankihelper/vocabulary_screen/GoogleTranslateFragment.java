@@ -47,8 +47,13 @@ public class GoogleTranslateFragment extends Fragment {
             if (AnkiHelperApplication.currentWord.type.isUppercase()) {
                 String[] split = germanWord.split(" ");
 
-                AnkiHelperApplication.currentWord.germanWord = split[0] + " " +
-                        split[1].substring(0, 1).toUpperCase() + split[1].substring(1);
+                if (split.length == 2) {
+                    AnkiHelperApplication.currentWord.germanWord = split[0] + " " +
+                            split[1].substring(0, 1).toUpperCase() + split[1].substring(1);
+                }
+                else {
+                    AnkiHelperApplication.currentWord.germanWord = split[0].toUpperCase();
+                }
             }
             else {
                 AnkiHelperApplication.currentWord.germanWord = germanWord.toLowerCase();
