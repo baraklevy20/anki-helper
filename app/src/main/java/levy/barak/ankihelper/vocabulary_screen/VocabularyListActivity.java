@@ -124,8 +124,7 @@ public class VocabularyListActivity extends Activity {
             clearList();
 
             Toast.makeText(this, "Done!", Toast.LENGTH_SHORT).show();
-        })
-                .setNegativeButton("No", null).show();
+        }).setNegativeButton("No", null).show();
     }
 
     public void zoomImageFromThumb(final View thumbView, String imagePath) {

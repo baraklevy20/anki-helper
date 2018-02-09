@@ -1,7 +1,7 @@
 package levy.barak.ankihelper.vocabulary_screen;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
@@ -32,7 +32,7 @@ import levy.barak.ankihelper.utils.ImageUtils;
 
 public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.DataObjectHolder> {
     private ArrayList<Word> mWords;
-    private Context mContext;
+    private Activity mVocabularyListActivity;
     private MediaPlayer mMediaPlayer;
 
     public static class DataObjectHolder extends RecyclerView.ViewHolder {
@@ -56,9 +56,9 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         }
     }
 
-    public CardsListAdapter(Context context, ArrayList<Word> myDataset) {
+    public CardsListAdapter(Activity vocabularyListActivity, ArrayList<Word> myDataset) {
         mWords = myDataset;
-        mContext = context;
+        mVocabularyListActivity = vocabularyListActivity;
         mMediaPlayer = new MediaPlayer();
     }
 
@@ -92,9 +92,9 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
 
         // Set image
         for (String imageUrl : word.imagesUrl) {
-            Bitmap bitmap = decodeSampledBitmap(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + imageUrl, ImageUtils.dipToPixels(mContext, 288), ImageUtils.dipToPixels(mContext, 144));
+            Bitmap bitmap = decodeSampledBitmap(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + imageUrl, ImageUtils.dipToPixels(mVocabularyListActivity, 288), ImageUtils.dipToPixels(mVocabularyListActivity, 144));
             holder.image.setImageBitmap(bitmap);
-            holder.image.setOnClickListener(v -> ((VocabularyListActivity) mContext).zoomImageFromThumb(holder.image, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + imageUrl));
+            holder.image.setOnClickListener(v -> ((VocabularyListActivity) mVocabularyListActivity).zoomImageFromThumb(holder.image, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + imageUrl));
         }
 
         // Set sound
@@ -102,7 +102,7 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
             try {
                 mMediaPlayer.reset();
                 mMediaPlayer.setAudioAttributes(new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build());
-                mMediaPlayer.setDataSource(mContext, Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + word.soundsUrl.get(0)));
+                mMediaPlayer.setDataSource(mVocabularyListActivity, Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + word.soundsUrl.get(0)));
                 mMediaPlayer.prepare();
                 mMediaPlayer.start();
             } catch (IOException e) {
@@ -111,12 +111,17 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         });
 
         holder.removeButton.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            AlertDialog.Builder builder = new AlertDialog.Builder(mVocabularyListActivity);
             builder.setMessage("Are you sure you want to remove the card?")
                     .setNegativeButton("No", null).setPositiveButton("Yes", (dialog, which) -> {
                 mWords.remove(position);
                 notifyDataSetChanged();
                 AnkiHelperApplication.writeWords();
+
+                if (mWords.size() == 0) {
+                    mVocabularyListActivity.findViewById(R.id.generateCardsButton).setEnabled(false);
+                    mVocabularyListActivity.findViewById(R.id.clearButton).setEnabled(false);
+                }
             }).show();
         });
     }

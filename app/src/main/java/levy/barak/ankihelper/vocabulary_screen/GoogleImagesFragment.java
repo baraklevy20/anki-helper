@@ -11,6 +11,9 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
@@ -18,6 +21,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 
@@ -90,11 +94,10 @@ public class GoogleImagesFragment extends Fragment {
             }
         });
 
-        googleImagesWebView.loadUrl(
-                "https://www.google.de/search?q=" +
-                        GermanUtils.getGermanWordWithoutPrefix() +
-                        "&hl=de&tbo=d&site=imghp&tbm=isch&gwd_rd=ssl"
-        );
+        googleImagesWebView.loadUrl(getUrl(GermanUtils.getGermanWordWithoutPrefix()));
+
+        // Enable the menu on this fragment
+        setHasOptionsMenu(true);
 
         return fragment;
     }
@@ -106,5 +109,33 @@ public class GoogleImagesFragment extends Fragment {
         transaction.replace(R.id.fragmentsContainer, newFragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    public String getUrl(String word) {
+        return "https://www.google.de/search?q=" + word +
+                "&hl=de&tbo=d&site=imghp&tbm=isch&gwd_rd=ssl";
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.vocabulary_menu_images, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        final WebView webView = (WebView) getActivity().findViewById(R.id.googleImagesWebView);
+        switch (item.getItemId()) {
+            case R.id.vocabulary_menu_images_search_in_english:
+                webView.loadUrl(getUrl(AnkiHelperApplication.currentWord.englishWord));
+                return true;
+            case R.id.vocabulary_menu_images_search_in_german:
+                webView.loadUrl(getUrl(GermanUtils.getGermanWordWithoutPrefix()));
+                return true;
+            case R.id.vocabulary_menu_images_search_in_german_with_prefix:
+                webView.loadUrl(getUrl(AnkiHelperApplication.currentWord.germanWord));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
