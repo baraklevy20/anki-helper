@@ -33,6 +33,7 @@ import levy.barak.ankihelper.utils.ImageUtils;
 public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.DataObjectHolder> {
     private ArrayList<Word> mWords;
     private Context mContext;
+    private MediaPlayer mMediaPlayer;
 
     public static class DataObjectHolder extends RecyclerView.ViewHolder {
         private TextView word;
@@ -58,6 +59,7 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
     public CardsListAdapter(Context context, ArrayList<Word> myDataset) {
         mWords = myDataset;
         mContext = context;
+        mMediaPlayer = new MediaPlayer();
     }
 
     @Override
@@ -98,11 +100,11 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         // Set sound
         holder.sound.setOnClickListener(v -> {
             try {
-                MediaPlayer mediaPlayer = new MediaPlayer();
-                mediaPlayer.setAudioAttributes(new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build());
-                mediaPlayer.setDataSource(mContext, Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + word.soundsUrl.get(0)));
-                mediaPlayer.prepare();
-                mediaPlayer.start();
+                mMediaPlayer.reset();
+                mMediaPlayer.setAudioAttributes(new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build());
+                mMediaPlayer.setDataSource(mContext, Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + word.soundsUrl.get(0)));
+                mMediaPlayer.prepare();
+                mMediaPlayer.start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
