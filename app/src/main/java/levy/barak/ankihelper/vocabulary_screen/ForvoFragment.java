@@ -18,6 +18,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
@@ -47,9 +48,15 @@ public class ForvoFragment extends Fragment {
             DownloadManager dm = (DownloadManager) forvoWebView.getContext().getSystemService(Context.DOWNLOAD_SERVICE);
             dm.enqueue(request);
 
+            // Get the additional information
+            AnkiHelperApplication.currentWord.additionalInformation =
+                    ((EditText)getActivity().findViewById(R.id.vocabularyAdditionalInfoEditText)).getText().toString();
+
+            // Add the sound and write the word
             AnkiHelperApplication.currentWord.soundsUrl.add(downloadName);
             AnkiHelperApplication.allWords.add(AnkiHelperApplication.currentWord);
             AnkiHelperApplication.writeWords();
+
             startActivity(new Intent(forvoWebView.getContext(), VocabularyListActivity.class));
         }
     }

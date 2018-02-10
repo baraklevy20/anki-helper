@@ -98,10 +98,12 @@ public class AnkiDatabase {
 
     public String getFullText(Word word) {
         String germanWord = word.germanWord.replace(" ", "&nbsp");
-        String image = "<img src=\"anki_helper_image_" + word.id + "_0\" /><div>" + word.type.getGermanTranslation() + "</div>";
-        String personal = word.type.getGermanTranslation();
+        String image = "<img src=\"anki_helper_image_" + word.id + "_0\" />" +
+                "<div>" + word.type.getGermanTranslation() + "</div>" +
+                "<div>" + word.additionalInformation + "</div>";
+        String personal = ""; // not used
         String soundAndIpa = "[sound:anki_helper_sound_" + word.id + "_0]<div>" + word.ipa + "</div>";
-        String spelling = "";
+        String spelling = ""; // not used
 
         if (word.wordInASentences != null) {
             soundAndIpa += "<div><dl>";
@@ -181,7 +183,7 @@ public class AnkiDatabase {
         fileNames[AnkiHelperApplication.allWords.size() * 2] = ankiHelperPath + "/media";
         fileNames[AnkiHelperApplication.allWords.size() * 2 + 1] = ankiHelperPath + "/collection.anki2";
 
-        zip(fileNames, Environment.getExternalStorageDirectory() + "/AnkiDroid/test.apkg");
+        zip(fileNames, Environment.getExternalStorageDirectory() + "/AnkiDroid/AnkiHelper.apkg");
     }
 
     public void zip(String[] _files, String zipFileName) {
