@@ -39,19 +39,24 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         private TextView word;
         private TextView ipa;
         private TextView examples;
-        private Button sound;
+        private ImageButton sound;
         private ImageView image;
         private ImageButton removeButton;
+        private TextView additionalInformation;
+
         private int currentExampleIndex;
 
         public DataObjectHolder(View itemView) {
             super(itemView);
+
             word = (TextView) itemView.findViewById(R.id.word_list_word);
             ipa = (TextView) itemView.findViewById(R.id.word_list_ipa);
             examples = (TextView) itemView.findViewById(R.id.word_list_examples);
-            sound = (Button) itemView.findViewById(R.id.word_list_sound);
+            sound = (ImageButton) itemView.findViewById(R.id.word_list_sound);
             image = (ImageView) itemView.findViewById(R.id.word_list_image);
             removeButton = (ImageButton) itemView.findViewById(R.id.word_remove_button);
+            additionalInformation = (TextView) itemView.findViewById(R.id.word_list_additional_information);
+
             currentExampleIndex = 0;
         }
     }
@@ -77,6 +82,7 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         // Set word and IPA
         holder.word.setText(word.germanWord + " (" + word.type.getGermanTranslation() + ")");
         holder.ipa.setText(word.ipa);
+        holder.additionalInformation.setText(word.additionalInformation);
 
         // Set examples
         if (word.wordInASentences != null && word.wordInASentences.size() > 0) {

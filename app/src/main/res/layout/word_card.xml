@@ -44,21 +44,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:text="sample"
             android:textSize="14sp"
-            card_view:layout_constraintBottom_toBottomOf="parent"
-            card_view:layout_constraintStart_toEndOf="@+id/word_list_sound"
-            card_view:layout_constraintTop_toTopOf="@+id/word_list_sound" />
-
-        <Button
-            android:id="@+id/word_list_sound"
-            style="@android:style/Widget.Material.Light.Button.Borderless.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
-            android:text="Play"
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintStart_toStartOf="parent" />
 
@@ -71,8 +58,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="No example sentences were found!"
-            card_view:layout_constraintBottom_toTopOf="@+id/word_list_sound"
+            card_view:layout_constraintBottom_toTopOf="@+id/word_list_ipa"
             card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintHorizontal_bias="0.701"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintTop_toBottomOf="@+id/word_list_word" />
 
@@ -81,9 +69,32 @@
             style="@android:style/Widget.Material.Light.ImageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@null"
+            android:src="@drawable/ic_clear_black_24dp"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/word_list_sound"
+            style="@android:style/Widget.Material.Light.ImageButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@null"
+            android:src="@drawable/ic_play_arrow_black_24dp"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/word_list_additional_information"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
-            android:src="@android:drawable/ic_menu_delete"
+            android:text="sample"
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintEnd_toEndOf="parent" />
 
