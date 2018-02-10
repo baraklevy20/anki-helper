@@ -91,15 +91,15 @@ public class AnkiDatabase {
                 UUID.randomUUID().toString().substring(0, 10),
                 System.currentTimeMillis() / 1000,
                 fullText,
-                word.germanWord,
-                Long.parseLong(sha1(word.germanWord).substring(0, 8), 16)
+                word.secondLanguageWord,
+                Long.parseLong(sha1(word.secondLanguageWord).substring(0, 8), 16)
         ));
     }
 
     public String getFullText(Word word) {
-        String germanWord = word.germanWord.replace(" ", "&nbsp");
+        String germanWord = word.secondLanguageWord.replace(" ", "&nbsp");
         String image = "<img src=\"anki_helper_image_" + word.id + "_0\" />" +
-                "<div>" + word.type.getGermanTranslation() + "</div>" +
+                "<div>" + word.translatedWordCategory + "</div>" +
                 "<div>" + word.additionalInformation + "</div>";
         String personal = ""; // not used
         String soundAndIpa = "[sound:anki_helper_sound_" + word.id + "_0]<div>" + word.ipa + "</div>";

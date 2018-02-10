@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,18 +16,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 
 import levy.barak.ankihelper.AnkiHelperApplication;
 import levy.barak.ankihelper.R;
 import levy.barak.ankihelper.utils.FileUtils;
-import levy.barak.ankihelper.utils.GermanUtils;
 
 public class GoogleImagesFragment extends Fragment {
     public class WebAppInterface {
@@ -94,7 +90,7 @@ public class GoogleImagesFragment extends Fragment {
             }
         });
 
-        googleImagesWebView.loadUrl(getUrl(GermanUtils.getGermanWordWithoutPrefix()));
+        googleImagesWebView.loadUrl(getUrl(AnkiHelperApplication.language.getMajorWordPart()));
 
         // Enable the menu on this fragment
         setHasOptionsMenu(true);
@@ -126,13 +122,13 @@ public class GoogleImagesFragment extends Fragment {
         final WebView webView = (WebView) getActivity().findViewById(R.id.googleImagesWebView);
         switch (item.getItemId()) {
             case R.id.vocabulary_menu_images_search_in_english:
-                webView.loadUrl(getUrl(AnkiHelperApplication.currentWord.englishWord));
+                webView.loadUrl(getUrl(AnkiHelperApplication.currentWord.firstLanguageWord));
                 return true;
             case R.id.vocabulary_menu_images_search_in_german:
-                webView.loadUrl(getUrl(GermanUtils.getGermanWordWithoutPrefix()));
+                webView.loadUrl(getUrl(AnkiHelperApplication.language.getMajorWordPart()));
                 return true;
             case R.id.vocabulary_menu_images_search_in_german_with_prefix:
-                webView.loadUrl(getUrl(AnkiHelperApplication.currentWord.germanWord));
+                webView.loadUrl(getUrl(AnkiHelperApplication.currentWord.secondLanguageWord));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

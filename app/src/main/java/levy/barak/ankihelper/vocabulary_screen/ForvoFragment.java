@@ -25,7 +25,6 @@ import java.io.UnsupportedEncodingException;
 
 import levy.barak.ankihelper.AnkiHelperApplication;
 import levy.barak.ankihelper.R;
-import levy.barak.ankihelper.utils.GermanUtils;
 
 public class ForvoFragment extends Fragment {
     public class DownloadHandler implements DownloadListener {
@@ -77,7 +76,7 @@ public class ForvoFragment extends Fragment {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 try {
                     String url = java.net.URLDecoder.decode(request.getUrl().toString().toLowerCase(), "UTF-8");
-                    String word = GermanUtils.getGermanWordWithoutPrefix().toLowerCase();
+                    String word = AnkiHelperApplication.language.getMajorWordPart().toLowerCase();
 
                     Log.i("requestedUrl", url);
 
@@ -96,7 +95,7 @@ public class ForvoFragment extends Fragment {
             }
         });
 
-        forvoWebView.loadUrl("https://forvo.com/word/de/" + GermanUtils.getGermanWordWithoutPrefix() + "/");
+        forvoWebView.loadUrl("https://forvo.com/word/de/" + AnkiHelperApplication.language.getMajorWordPart() + "/");
         CookieManager.getInstance().setAcceptCookie(true);
 
         return fragment;

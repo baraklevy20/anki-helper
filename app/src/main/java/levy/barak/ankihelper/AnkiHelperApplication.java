@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import levy.barak.ankihelper.anki.Word;
+import levy.barak.ankihelper.languages.GermanLanguage;
+import levy.barak.ankihelper.languages.Language;
 
 /**
  * Created by baraklev on 12/2/2017.
@@ -23,10 +25,13 @@ public class AnkiHelperApplication extends Application {
 
     public static ArrayList<Word> allWords;
 
+    public static Language language;
+
     @Override
     public void onCreate() {
         super.onCreate();
         this.prefs = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        language = new GermanLanguage();
     }
 
     public static void writeWords() {

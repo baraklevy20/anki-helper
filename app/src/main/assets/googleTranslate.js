@@ -52,7 +52,7 @@
                 wordType = currentNode.parentNode.previousSibling.innerText;
             }
 
-            Android.catchGermanWord(word, wordType);
+            Android.catchGoogleTranslateWord(word, wordType);
         });
     }
 )();

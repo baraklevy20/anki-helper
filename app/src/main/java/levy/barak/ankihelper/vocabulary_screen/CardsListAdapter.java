@@ -13,7 +13,6 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -80,7 +79,7 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         Word word = mWords.get(position);
 
         // Set word and IPA
-        holder.word.setText(word.germanWord + " (" + word.type.getGermanTranslation() + ")");
+        holder.word.setText(word.secondLanguageWord + " (" + word.translatedWordCategory + ")");
         holder.ipa.setText(word.ipa);
         holder.additionalInformation.setText(word.additionalInformation);
 

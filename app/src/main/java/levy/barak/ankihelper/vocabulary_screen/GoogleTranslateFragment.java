@@ -25,8 +25,8 @@ import java.io.IOException;
 
 import levy.barak.ankihelper.AnkiHelperApplication;
 import levy.barak.ankihelper.R;
+import levy.barak.ankihelper.languages.GermanLanguage;
 import levy.barak.ankihelper.utils.FileUtils;
-import levy.barak.ankihelper.utils.GermanUtils;
 
 /**
  * Created by baraklev on 2/9/2018.
@@ -41,24 +41,10 @@ public class GoogleTranslateFragment extends Fragment {
         }
 
         @JavascriptInterface
-        public void catchGermanWord(String germanWord, String type) {
-            AnkiHelperApplication.currentWord.type = GermanUtils.WordCategory.valueOf(type.substring(0, type.length() - 1).toUpperCase()); // Remove the '\n'
-
-            // Set the german word to either capitalized or lower cased
-            if (AnkiHelperApplication.currentWord.type.isUppercase()) {
-                String[] split = germanWord.split(" ");
-
-                if (split.length == 2) {
-                    AnkiHelperApplication.currentWord.germanWord = split[0] + " " +
-                            split[1].substring(0, 1).toUpperCase() + split[1].substring(1);
-                }
-                else {
-                    AnkiHelperApplication.currentWord.germanWord = split[0].substring(0, 1).toUpperCase() + split[0].substring(1);
-                }
-            }
-            else {
-                AnkiHelperApplication.currentWord.germanWord = germanWord.toLowerCase();
-            }
+        public void catchGoogleTranslateWord(String googleTranslateWord, String wordCategory) {
+            String lowerCaseCategory = wordCategory.substring(0, wordCategory.length() - 1).toLowerCase(); // Remove the '\n'
+            AnkiHelperApplication.currentWord.translatedWordCategory = AnkiHelperApplication.language.wordCategoriesTranslations.get(lowerCaseCategory);
+            AnkiHelperApplication.currentWord.secondLanguageWord = AnkiHelperApplication.language.parseGoogleTranslateWord(googleTranslateWord, lowerCaseCategory);
 
             // Move to the google images activity
             moveToNextScreen();
@@ -66,7 +52,7 @@ public class GoogleTranslateFragment extends Fragment {
             new Thread(() -> {
                 // Get additional information about the word
                 try {
-                    getWordInformationFromWiki(GermanUtils.getGermanWordWithoutPrefix());
+                    getWordInformationFromWiki(AnkiHelperApplication.language.getMajorWordPart());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -147,7 +133,9 @@ public class GoogleTranslateFragment extends Fragment {
             }
         });
 
-        googleTranslateEditView.loadUrl("https://translate.google.com/m/translate#en/de/" + AnkiHelperApplication.currentWord.englishWord);
+        googleTranslateEditView.loadUrl("https://translate.google.com/m/translate#en/" +
+                AnkiHelperApplication.language.getLanguageCode() + "/" +
+                AnkiHelperApplication.currentWord.firstLanguageWord);
 
         return fragment;
     }
