@@ -18,6 +18,7 @@ import android.widget.Toast;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -94,10 +95,20 @@ public class GoogleTranslateFragment extends Fragment {
 
             AnkiHelperApplication.currentWord.ipa = ipas.first().text();
 
-            Elements wordInASentences = doc.select("[title=Verwendungsbeispielsätze]").first().nextElementSibling().children();
+            Element examplesElement = doc.select("[title=Verwendungsbeispielsätze]").first();
 
-            for (int i = 0; i < wordInASentences.size(); i++) {
-                AnkiHelperApplication.currentWord.wordInASentences.add(wordInASentences.get(i).html());
+            // If there are any examples
+            if (examplesElement != null) {
+                // Read them
+                Elements wordInASentences = examplesElement.nextElementSibling().children();
+
+                // Clear before usage so if the user has chosen a different translation,
+                // it would get the sentences from the latest translation.
+                AnkiHelperApplication.currentWord.wordInASentences.clear();
+
+                for (int i = 0; i < wordInASentences.size(); i++) {
+                    AnkiHelperApplication.currentWord.wordInASentences.add(wordInASentences.get(i).html());
+                }
             }
         }
     }
