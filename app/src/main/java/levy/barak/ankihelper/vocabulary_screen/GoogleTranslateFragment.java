@@ -118,7 +118,7 @@ public class GoogleTranslateFragment extends Fragment {
 
         String first = isFirstToSecondLanguage ? "en" : AnkiHelperApplication.language.getGoogleTranslateLanguageCode();
         String second = isFirstToSecondLanguage ? AnkiHelperApplication.language.getGoogleTranslateLanguageCode() : "en";
-        String wordToTranslate = isFirstToSecondLanguage ? AnkiHelperApplication.currentWord.firstLanguageWord
+        String wordToTranslate = isFirstToSecondLanguage ? AnkiHelperApplication.currentWord.firstLanguageWord.toLowerCase()
                 : AnkiHelperApplication.currentWord.secondLanguageWord;
 
         googleTranslateEditView.loadUrl("https://translate.google.com/m/translate#" + first + "/" +
