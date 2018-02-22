@@ -32,7 +32,7 @@ public class AnkiHelperApplication extends Application {
     public void onCreate() {
         super.onCreate();
         this.prefs = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        language = new HebrewLanguage();
+        language = new GermanLanguage();
     }
 
     public static void writeWords() {

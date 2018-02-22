@@ -69,7 +69,6 @@ public class VocabularyListActivity extends Activity {
         cardsList.setAdapter(new CardsListAdapter(this, AnkiHelperApplication.allWords));
 
         EditText editText = (EditText) findViewById(R.id.englishWordEditText);
-        editText.setText("dog");
 
         // This enable to click enter and it would translate the word, instead of clicking "translate"
         editText.setOnEditorActionListener((v, actionId, event) -> {
