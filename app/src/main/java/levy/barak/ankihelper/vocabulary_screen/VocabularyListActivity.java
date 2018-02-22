@@ -74,7 +74,7 @@ public class VocabularyListActivity extends Activity {
         // This enable to click enter and it would translate the word, instead of clicking "translate"
         editText.setOnEditorActionListener((v, actionId, event) -> {
             if(actionId == EditorInfo.IME_ACTION_NEXT) {
-                onTranslateClick(null);
+                onFirstToSecondClick(null);
                 return true;
             }
             return false;
@@ -92,15 +92,24 @@ public class VocabularyListActivity extends Activity {
         }
     }
 
-    public void onTranslateClick(View view) {
+    public void onFirstToSecondClick(View view) {
+        startVocabularyActivity(true);
+    }
+
+    public void onSecondToFirstClick(View view) {
+        startVocabularyActivity(false);
+    }
+
+    private void startVocabularyActivity(boolean isFirstToSecondLanguage) {
         EditText editText = (EditText) findViewById(R.id.englishWordEditText);
 
         if (editText.getText().toString().trim().isEmpty()) {
             editText.setError("Please enter a word");
         }
         else {
-            AnkiHelperApplication.currentWord = new Word(editText.getText().toString());
-            startActivity(new Intent(this, VocabularyActivity.class));
+            AnkiHelperApplication.currentWord = new Word(editText.getText().toString(), isFirstToSecondLanguage);
+            startActivity(new Intent(this, VocabularyActivity.class).putExtra(
+                    GoogleTranslateFragment.FIRST_LANGUAGE_TO_SECOND_LANGUAGE, isFirstToSecondLanguage));
         }
     }
 

@@ -76,7 +76,7 @@ public class ForvoFragment extends Fragment {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 try {
                     String url = java.net.URLDecoder.decode(request.getUrl().toString().toLowerCase(), "UTF-8");
-                    String word = AnkiHelperApplication.language.getMajorWordPart().toLowerCase();
+                    String word = AnkiHelperApplication.language.getSearchableWord().toLowerCase();
 
                     Log.i("requestedUrl", url);
 
@@ -95,7 +95,7 @@ public class ForvoFragment extends Fragment {
             }
         });
 
-        forvoWebView.loadUrl("https://forvo.com/word/de/" + AnkiHelperApplication.language.getMajorWordPart() + "/");
+        forvoWebView.loadUrl("https://forvo.com/word/de/" + AnkiHelperApplication.language.getSearchableWord() + "/");
         CookieManager.getInstance().setAcceptCookie(true);
 
         return fragment;

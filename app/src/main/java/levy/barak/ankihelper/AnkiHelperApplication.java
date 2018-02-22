@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 import levy.barak.ankihelper.anki.Word;
 import levy.barak.ankihelper.languages.GermanLanguage;
+import levy.barak.ankihelper.languages.HebrewLanguage;
 import levy.barak.ankihelper.languages.Language;
 
 /**
@@ -31,7 +32,7 @@ public class AnkiHelperApplication extends Application {
     public void onCreate() {
         super.onCreate();
         this.prefs = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
-        language = new GermanLanguage();
+        language = new HebrewLanguage();
     }
 
     public static void writeWords() {

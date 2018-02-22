@@ -90,7 +90,7 @@ public class GoogleImagesFragment extends Fragment {
             }
         });
 
-        googleImagesWebView.loadUrl(getUrl(AnkiHelperApplication.language.getMajorWordPart()));
+        googleImagesWebView.loadUrl(getUrl(AnkiHelperApplication.language.getSearchableWord()));
 
         // Enable the menu on this fragment
         setHasOptionsMenu(true);
@@ -125,7 +125,7 @@ public class GoogleImagesFragment extends Fragment {
                 webView.loadUrl(getUrl(AnkiHelperApplication.currentWord.firstLanguageWord));
                 return true;
             case R.id.vocabulary_menu_images_search_in_german:
-                webView.loadUrl(getUrl(AnkiHelperApplication.language.getMajorWordPart()));
+                webView.loadUrl(getUrl(AnkiHelperApplication.language.getSearchableWord()));
                 return true;
             case R.id.vocabulary_menu_images_search_in_german_with_prefix:
                 webView.loadUrl(getUrl(AnkiHelperApplication.currentWord.secondLanguageWord));

@@ -13,19 +13,15 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
 
 import levy.barak.ankihelper.AnkiHelperApplication;
 import levy.barak.ankihelper.R;
-import levy.barak.ankihelper.languages.GermanLanguage;
+import levy.barak.ankihelper.anki.Word;
 import levy.barak.ankihelper.utils.FileUtils;
 
 /**
@@ -33,18 +29,29 @@ import levy.barak.ankihelper.utils.FileUtils;
  */
 
 public class GoogleTranslateFragment extends Fragment {
-    public class WebAppInterface {
-        private GoogleTranslateFragment mContext;
+    public static final String FIRST_LANGUAGE_TO_SECOND_LANGUAGE = "levy.barak.ankihelper.first_to_second_language";
+    private boolean isFirstToSecondLanguage;
 
-        WebAppInterface(GoogleTranslateFragment c) {
+    public class WebAppInterface {
+        private Fragment mContext;
+
+        WebAppInterface(Fragment c) {
             mContext = c;
         }
 
         @JavascriptInterface
         public void catchGoogleTranslateWord(String googleTranslateWord, String wordCategory) {
-            String lowerCaseCategory = wordCategory.substring(0, wordCategory.length() - 1).toLowerCase(); // Remove the '\n'
-            AnkiHelperApplication.currentWord.translatedWordCategory = AnkiHelperApplication.language.wordCategoriesTranslations.get(lowerCaseCategory);
-            AnkiHelperApplication.currentWord.secondLanguageWord = AnkiHelperApplication.language.parseGoogleTranslateWord(googleTranslateWord, lowerCaseCategory);
+            String trimmedWordCategory = wordCategory.substring(0, wordCategory.length() - 1); // Remove the '\n'
+
+            AnkiHelperApplication.currentWord.wordCategory = Word.WordCategory.valueOf(trimmedWordCategory.toUpperCase());
+
+            if (isFirstToSecondLanguage) {
+                AnkiHelperApplication.currentWord.secondLanguageWord =
+                        AnkiHelperApplication.language.parseGoogleTranslateWord(googleTranslateWord, AnkiHelperApplication.currentWord.wordCategory);
+            }
+            else {
+                AnkiHelperApplication.currentWord.firstLanguageWord = googleTranslateWord;
+            }
 
             // Move to the google images activity
             moveToNextScreen();
@@ -52,7 +59,7 @@ public class GoogleTranslateFragment extends Fragment {
             new Thread(() -> {
                 // Get additional information about the word
                 try {
-                    getWordInformationFromWiki(AnkiHelperApplication.language.getMajorWordPart());
+                    getWordInformationFromWiki(AnkiHelperApplication.language.getSearchableWord());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -69,33 +76,8 @@ public class GoogleTranslateFragment extends Fragment {
         }
 
         public void getWordInformationFromWiki(String word) throws IOException {
-            Connection connection = Jsoup.connect("https://de.wiktionary.org/wiki/" + word);
-            Document doc = connection.get();
-
-            Elements ipas = doc.select(".ipa");
-
-            if (ipas.size() == 0) {
-                mContext.getActivity().runOnUiThread(() -> Toast.makeText(mContext.getActivity(), "Couldn't find an IPA. Wrong word perhaps?", Toast.LENGTH_LONG).show());
-                return;
-            }
-
-            AnkiHelperApplication.currentWord.ipa = ipas.first().text();
-
-            Element examplesElement = doc.select("[title=Verwendungsbeispielsätze]").first();
-
-            // If there are any examples
-            if (examplesElement != null) {
-                // Read them
-                Elements wordInASentences = examplesElement.nextElementSibling().children();
-
-                // Clear before usage so if the user has chosen a different translation,
-                // it would get the sentences from the latest translation.
-                AnkiHelperApplication.currentWord.wordInASentences.clear();
-
-                for (int i = 0; i < wordInASentences.size(); i++) {
-                    AnkiHelperApplication.currentWord.wordInASentences.add(wordInASentences.get(i).html());
-                }
-            }
+            Connection connection = Jsoup.connect("https://" + AnkiHelperApplication.language.getWiktionaryLanguageCode() + ".wiktionary.org/wiki/" + word);
+            AnkiHelperApplication.language.getInformationFromWiktionary(mContext, connection.get(), isFirstToSecondLanguage);
         }
     }
 
@@ -103,6 +85,7 @@ public class GoogleTranslateFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View fragment = inflater.inflate(R.layout.fragment_vocabulary_google_translate, container, false);
+        isFirstToSecondLanguage = getActivity().getIntent().getBooleanExtra(FIRST_LANGUAGE_TO_SECOND_LANGUAGE, true);
 
         final WebView googleTranslateEditView = (WebView) fragment.findViewById(R.id.googleTranslateWebView);
         googleTranslateEditView.addJavascriptInterface(new WebAppInterface(this), "Android");
@@ -133,9 +116,14 @@ public class GoogleTranslateFragment extends Fragment {
             }
         });
 
-        googleTranslateEditView.loadUrl("https://translate.google.com/m/translate#en/" +
-                AnkiHelperApplication.language.getLanguageCode() + "/" +
-                AnkiHelperApplication.currentWord.firstLanguageWord);
+        String first = isFirstToSecondLanguage ? "en" : AnkiHelperApplication.language.getGoogleTranslateLanguageCode();
+        String second = isFirstToSecondLanguage ? AnkiHelperApplication.language.getGoogleTranslateLanguageCode() : "en";
+        String wordToTranslate = isFirstToSecondLanguage ? AnkiHelperApplication.currentWord.firstLanguageWord
+                : AnkiHelperApplication.currentWord.secondLanguageWord;
+
+        googleTranslateEditView.loadUrl("https://translate.google.com/m/translate#" + first + "/" +
+                second + "/" +
+                wordToTranslate);
 
         return fragment;
     }

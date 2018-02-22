@@ -99,7 +99,7 @@ public class AnkiDatabase {
     public String getFullText(Word word) {
         String germanWord = word.secondLanguageWord.replace(" ", "&nbsp");
         String image = "<img src=\"anki_helper_image_" + word.id + "_0\" />" +
-                "<div>" + word.translatedWordCategory + "</div>" +
+                "<div>" + AnkiHelperApplication.language.wordCategoriesTranslations.get(word.wordCategory) + "</div>" +
                 "<div>" + word.additionalInformation + "</div>";
         String personal = ""; // not used
         String soundAndIpa = "[sound:anki_helper_sound_" + word.id + "_0]<div>" + word.ipa + "</div>";

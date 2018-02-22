@@ -14,14 +14,27 @@ public final class Word {
     public ArrayList<String> soundsUrl;
     public String ipa;
     public String additionalInformation;
-    public String translatedWordCategory;
+    public WordCategory wordCategory;
     public ArrayList<String> wordInASentences;
 
-    public Word(String firstLanguageWord) {
+    public Word(String firstWord, boolean isFirstToSecondLanguage) {
         this.id = (long)(Math.random() * Long.MAX_VALUE);
-        this.firstLanguageWord = firstLanguageWord;
+
+        if (isFirstToSecondLanguage) {
+            this.firstLanguageWord = firstWord;
+        }
+        else {
+            this.secondLanguageWord = firstWord;
+        }
         this.imagesUrl = new ArrayList<>();
         this.soundsUrl = new ArrayList<>();
         this.wordInASentences = new ArrayList<>();
+    }
+
+    public enum WordCategory {
+        NOUN,
+        VERB,
+        ADJECTIVE,
+        ADVERB
     }
 }
