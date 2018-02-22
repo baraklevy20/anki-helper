@@ -79,7 +79,8 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         Word word = mWords.get(position);
 
         // Set word and IPA
-        holder.word.setText(word.secondLanguageWord + " (" + AnkiHelperApplication.language.wordCategoriesTranslations.get(word.wordCategory) + ")");
+        holder.word.setText(word.secondLanguageWord + (word.wordCategory == null ? "" :
+                " (" + AnkiHelperApplication.language.wordCategoriesTranslations.get(word.wordCategory) + ")"));
         holder.ipa.setText(word.ipa);
         holder.additionalInformation.setText(word.additionalInformation);
 

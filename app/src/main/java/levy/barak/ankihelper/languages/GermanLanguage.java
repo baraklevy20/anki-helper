@@ -53,6 +53,11 @@ public class GermanLanguage extends Language {
 
     @Override
     public String parseGoogleTranslateWord(String googleTranslateWord, Word.WordCategory wordCategory) {
+        // Nothing to do...
+        if (wordCategory == null) {
+            return googleTranslateWord;
+        }
+
         // Set the german word to either capitalized or lower cased
         if (wordCategoriesUppercases.get(wordCategory)) {
             String[] split = googleTranslateWord.split(" ");
@@ -95,9 +100,14 @@ public class GermanLanguage extends Language {
             }
         }
 
-        // Change the word by adding the definite article if necessary
+        // Change the word by adding the definite article in the following cases:
+        // If the word category is null
+        // If we're translating from German to English
+        // If it's a noun with one word (no definite article)
         if (!isFirstToSecondLanguage && AnkiHelperApplication.currentWord.wordCategory == Word.WordCategory.NOUN ||
-                isFirstToSecondLanguage && AnkiHelperApplication.currentWord.wordCategory == Word.WordCategory.NOUN && AnkiHelperApplication.currentWord.secondLanguageWord.split(" ").length == 1) {
+                isFirstToSecondLanguage && (AnkiHelperApplication.currentWord.wordCategory == null ||
+                AnkiHelperApplication.currentWord.wordCategory == Word.WordCategory.NOUN &&
+                AnkiHelperApplication.currentWord.secondLanguageWord.split(" ").length == 1)) {
             String fullType = doc.select(".mw-headline").get(1).id();
             char gender = fullType.charAt(fullType.length() - 1); // m, f or n
             String article = gender == 'm' ? "der" :
