@@ -116,5 +116,11 @@ public class GermanLanguage extends Language {
 
             AnkiHelperApplication.currentWord.secondLanguageWord = article + " " + AnkiHelperApplication.currentWord.secondLanguageWord;
         }
+
+        // If it's a noun, get it's plural form as well
+        if (AnkiHelperApplication.currentWord.wordCategory == Word.WordCategory.NOUN) {
+            AnkiHelperApplication.currentWord.plural =
+                    doc.select("[title=Hilfe:Plural]").first().parent().parent().nextElementSibling().child(2).text();
+        }
     }
 }

@@ -10,6 +10,7 @@ public final class Word {
     public long id;
     public String firstLanguageWord;
     public String secondLanguageWord;
+    public String plural;
     public ArrayList<String> imagesUrl;
     public ArrayList<String> soundsUrl;
     public String ipa;

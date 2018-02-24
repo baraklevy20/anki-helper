@@ -97,7 +97,7 @@ public class AnkiDatabase {
     }
 
     public String getFullText(Word word) {
-        String germanWord = word.secondLanguageWord.replace(" ", "&nbsp");
+        String germanWord = (word.secondLanguageWord + (word.plural == null ? "" : "<br>" + word.plural)).replace(" ", "&nbsp");
         String image = "<img src=\"anki_helper_image_" + word.id + "_0\" />" +
                 (word.wordCategory == null ? "" : "<div>" + AnkiHelperApplication.language.wordCategoriesTranslations.get(word.wordCategory) + "</div>") +
                 "<div>" + word.additionalInformation + "</div>";
