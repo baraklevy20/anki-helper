@@ -73,7 +73,7 @@ public class AnkiDatabase {
                 .replace("$(decksConfigurations)", dconf);
     }
 
-    public void insertCard(int order, long noteId) {
+    public void insertWordCard(int order, long noteId) {
         db.execSQL(String.format("INSERT into cards VALUES ('%d', '%d', '%d', '%d', '%d', '-1','0','0','484332854','0','0','0','0','0','0','0','0','')",
                 (long)(Math.random() * Long.MAX_VALUE),
                 noteId,
@@ -83,7 +83,7 @@ public class AnkiDatabase {
         ));
     }
 
-    public void insertNote(Word word) throws NoSuchAlgorithmException {
+    public void insertWordNote(Word word) throws NoSuchAlgorithmException {
         String fullText = getFullText(word).replace("\'", "\'\'");
 
         db.execSQL(String.format("INSERT into notes VALUES ('%d', '%s', '1366716141610', '%d', '-1', '', '%s', '%s', '%s', '0', '')",
@@ -94,6 +94,36 @@ public class AnkiDatabase {
                 word.secondLanguageWord,
                 Long.parseLong(sha1(word.secondLanguageWord).substring(0, 8), 16)
         ));
+    }
+
+    public void insertSentenceCard(int order, long noteId) {
+        db.execSQL(String.format("INSERT into cards VALUES ('%d', '%d', '%d', '%d', '%d', '-1','0','0','484332854','0','0','0','0','0','0','0','0','')",
+                (long)(Math.random() * Long.MAX_VALUE),
+                noteId,
+                deckId,
+                order,
+                System.currentTimeMillis() / 1000
+        ));
+    }
+
+    public void insertSentenceNote(Sentence sentence, int index) throws NoSuchAlgorithmException {
+        String fullText = getFullText(sentence, index).replace("\'", "\'\'");
+        String blankedSentence = sentence.getBlankedSentence(index);
+
+        db.execSQL(String.format("INSERT into notes VALUES ('%d', '%s', '1366982516457', '%d', '-1', '', '%s', '%s', '%s', '0', '')",
+                sentence.id,
+                UUID.randomUUID().toString().substring(0, 10),
+                System.currentTimeMillis() / 1000,
+                fullText,
+                blankedSentence,
+                Long.parseLong(sha1(blankedSentence).substring(0, 8), 16)
+        ));
+    }
+
+    public String getFullText(Sentence sentence, int index) {
+        char separator = 0x1F;
+        return sentence.getBlankedSentence(index) + separator + separator + separator + sentence.words[index] +
+                separator + sentence.getFullSentence() + separator + separator + separator + separator;
     }
 
     public String getFullText(Word word) {
@@ -139,9 +169,9 @@ public class AnkiDatabase {
         for (int i = 0; i < AnkiHelperApplication.allWords.size(); i++) {
             try {
                 Word word = AnkiHelperApplication.allWords.get(i);
-                insertNote(word);
-                insertCard(0, word.id);
-                insertCard(1, word.id);
+                insertWordNote(word);
+                insertWordCard(0, word.id);
+                insertWordCard(1, word.id);
 
                 try {
                     // Add the medias to the array
@@ -154,6 +184,16 @@ public class AnkiDatabase {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (int i = 0; i < AnkiHelperApplication.allSentences.size(); i++) {
+            try {
+                Sentence sentence = AnkiHelperApplication.allSentences.get(i);
+                insertSentenceNote(sentence, sentence.getFirstBlank());
+                insertSentenceCard(0, sentence.id);
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }

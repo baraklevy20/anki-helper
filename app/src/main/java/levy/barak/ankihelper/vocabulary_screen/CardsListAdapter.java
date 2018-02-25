@@ -79,7 +79,7 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         Word word = mWords.get(position);
 
         // Set word and IPA
-        holder.word.setText(word.secondLanguageWord + "/" + word.plural + (word.wordCategory == null ? "" :
+        holder.word.setText(word.secondLanguageWord + (word.plural == null ? "" : "/" + word.plural) + (word.wordCategory == null ? "" :
                 " (" + AnkiHelperApplication.language.wordCategoriesTranslations.get(word.wordCategory) + ")"));
         holder.ipa.setText(word.ipa);
         holder.additionalInformation.setText(word.additionalInformation);
@@ -124,7 +124,7 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
                 notifyDataSetChanged();
                 AnkiHelperApplication.writeWords();
 
-                if (mWords.size() == 0) {
+                if (mWords.size() + AnkiHelperApplication.allSentences.size() == 0) {
                     mVocabularyListActivity.findViewById(R.id.generateCardsButton).setEnabled(false);
                     mVocabularyListActivity.findViewById(R.id.clearButton).setEnabled(false);
                 }

@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import levy.barak.ankihelper.anki.Sentence;
 import levy.barak.ankihelper.anki.Word;
 import levy.barak.ankihelper.languages.GermanLanguage;
 import levy.barak.ankihelper.languages.HebrewLanguage;
@@ -26,6 +27,8 @@ public class AnkiHelperApplication extends Application {
 
     public static ArrayList<Word> allWords;
 
+    public static ArrayList<Sentence> allSentences;
+
     public static Language language;
 
     @Override
@@ -39,19 +42,31 @@ public class AnkiHelperApplication extends Application {
         prefs.edit().putString("Words", new Gson().toJson(allWords)).apply();
     }
 
+    public static void writeSentences() {
+        prefs.edit().putString("Sentences", new Gson().toJson(allSentences)).apply();
+    }
+
     public static void readWords() {
         Gson gson = new Gson();
         String json = prefs.getString("Words", "");
         Word[] words = gson.fromJson(json, Word[].class);
 
-        allWords = new ArrayList<>();
+        json = prefs.getString("Sentences", "");
+        Sentence[] sentences = gson.fromJson(json, Sentence[].class);
 
-        // If there are no words, return
-        if (words == null) {
-            return;
+        allWords = new ArrayList<>();
+        allSentences = new ArrayList<>();
+
+        // Convert if there are words
+        if (words != null) {
+            // Convert to a list
+            Arrays.stream(words).forEach(w -> allWords.add(w));
         }
 
-        // Convert to a list
-        Arrays.stream(words).forEach(w -> allWords.add(w));
+        // Convert if there are words
+        if (sentences != null) {
+            // Convert to a list
+            Arrays.stream(sentences).forEach(w -> allSentences.add(w));
+        }
     }
 }

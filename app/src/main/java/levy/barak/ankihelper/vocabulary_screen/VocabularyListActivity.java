@@ -85,7 +85,7 @@ public class VocabularyListActivity extends Activity {
                 android.R.integer.config_shortAnimTime);
 
         // Disable the generate/clear buttons if necessary
-        if (AnkiHelperApplication.allWords.size() == 0) {
+        if (AnkiHelperApplication.allWords.size() + AnkiHelperApplication.allSentences.size() == 0) {
             findViewById(R.id.generateCardsButton).setEnabled(false);
             findViewById(R.id.clearButton).setEnabled(false);
         }
@@ -274,9 +274,14 @@ public class VocabularyListActivity extends Activity {
     }
 
     public void clearList() {
-        // Reset the words to 0
+        // Clear the words
         AnkiHelperApplication.allWords.clear();
         AnkiHelperApplication.writeWords();
+
+        // Clear the sentences
+        AnkiHelperApplication.allSentences.clear();;
+        AnkiHelperApplication.writeSentences();
+
         File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
                 "/anki_helper");
 
@@ -293,5 +298,9 @@ public class VocabularyListActivity extends Activity {
         // Disable generate and clear buttons
         findViewById(R.id.generateCardsButton).setEnabled(false);
         findViewById(R.id.clearButton).setEnabled(false);
+    }
+
+    public void onGrammarClick(View view) {
+        startActivity(new Intent(this, GrammarActivity.class));
     }
 }
