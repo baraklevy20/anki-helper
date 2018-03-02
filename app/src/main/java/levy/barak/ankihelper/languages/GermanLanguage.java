@@ -91,15 +91,16 @@ public class GermanLanguage extends Language {
         // If there are any examples
         if (examplesElement != null) {
             // Read them
-            Elements wordInASentences = examplesElement.nextElementSibling().children();
+            Element currentNode = examplesElement.nextElementSibling();
+            String html = "";
 
-            // Clear before usage so if the user has chosen a different translation,
-            // it would get the sentences from the latest translation.
-            AnkiHelperApplication.currentWord.wordInASentences.clear();
-
-            for (int i = 0; i < wordInASentences.size(); i++) {
-                AnkiHelperApplication.currentWord.wordInASentences.add(wordInASentences.get(i).html());
+            // Read until we get to the next subject. The next subject has a title attribute
+            while (currentNode != null && currentNode.select("[title]").size() == 0) {
+                html += currentNode.html();
+                currentNode = currentNode.nextElementSibling();
             }
+
+            AnkiHelperApplication.currentWord.exampleSentences = html;
         }
 
         // Change the word by adding the definite article in the following cases:

@@ -16,7 +16,7 @@ public final class Word {
     public String ipa;
     public String additionalInformation;
     public WordCategory wordCategory;
-    public ArrayList<String> wordInASentences;
+    public String exampleSentences;
 
     public Word(String firstWord, boolean isFirstToSecondLanguage) {
         this.id = (long)(Math.random() * Long.MAX_VALUE);
@@ -29,7 +29,6 @@ public final class Word {
         }
         this.imagesUrl = new ArrayList<>();
         this.soundsUrl = new ArrayList<>();
-        this.wordInASentences = new ArrayList<>();
     }
 
     public enum WordCategory {

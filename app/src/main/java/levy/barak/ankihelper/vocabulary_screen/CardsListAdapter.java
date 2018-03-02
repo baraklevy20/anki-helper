@@ -89,15 +89,8 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
         holder.additionalInformation.setText(word.additionalInformation);
 
         // Set examples
-        if (word.wordInASentences != null && word.wordInASentences.size() > 0) {
-            holder.examples.setText(Html.fromHtml(word.wordInASentences.get(holder.currentExampleIndex), Html.FROM_HTML_MODE_COMPACT));
-
-            if (word.wordInASentences.size() > 1) {
-                holder.examples.setOnClickListener(v -> {
-                    holder.currentExampleIndex = (holder.currentExampleIndex + 1) % word.wordInASentences.size();
-                    holder.examples.setText(Html.fromHtml(word.wordInASentences.get(holder.currentExampleIndex), Html.FROM_HTML_MODE_COMPACT));
-                });
-            }
+        if (word.exampleSentences != null) {
+            holder.examples.setText(Html.fromHtml(word.exampleSentences, Html.FROM_HTML_MODE_COMPACT));
         }
 
         // Set image

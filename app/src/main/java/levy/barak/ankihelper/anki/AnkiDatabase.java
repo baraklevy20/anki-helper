@@ -136,14 +136,8 @@ public class AnkiDatabase {
         String soundAndIpa = "[sound:anki_helper_sound_" + word.id + "_0]<div>" + word.ipa + "</div>";
         String spelling = ""; // not used
 
-        if (word.wordInASentences != null) {
-            soundAndIpa += "<div><dl>";
-
-            for (String sentence : word.wordInASentences) {
-                soundAndIpa += "<dd>" + sentence + "</dd>";
-            }
-
-            soundAndIpa += "</dl></div>";
+        if (word.exampleSentences != null) {
+            soundAndIpa += "<div>" + word.exampleSentences + "</div>";
         }
 
         char separator = 0x1F;
