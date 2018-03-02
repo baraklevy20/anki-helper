@@ -36,6 +36,7 @@ public final class Word {
         NOUN,
         VERB,
         ADJECTIVE,
-        ADVERB
+        ADVERB,
+        PREPOSITION
     }
 }

@@ -22,6 +22,7 @@ public class HebrewLanguage extends Language {
         wordCategoriesTranslations.put(Word.WordCategory.VERB, "פועל");
         wordCategoriesTranslations.put(Word.WordCategory.ADJECTIVE, "שם תואר");
         wordCategoriesTranslations.put(Word.WordCategory.ADVERB, "תואר הפועל");
+        wordCategoriesTranslations.put(Word.WordCategory.PREPOSITION, "מילת יחס");
     }
 
     @Override

@@ -25,6 +25,7 @@ public class GermanLanguage extends Language {
         wordCategoriesUppercases.put(Word.WordCategory.VERB, false);
         wordCategoriesUppercases.put(Word.WordCategory.ADJECTIVE, false);
         wordCategoriesUppercases.put(Word.WordCategory.ADVERB, false);
+        wordCategoriesUppercases.put(Word.WordCategory.PREPOSITION, false);
     }
 
     @Override
@@ -33,6 +34,7 @@ public class GermanLanguage extends Language {
         wordCategoriesTranslations.put(Word.WordCategory.VERB, "Verb");
         wordCategoriesTranslations.put(Word.WordCategory.ADJECTIVE, "Adjektiv");
         wordCategoriesTranslations.put(Word.WordCategory.ADVERB, "Adverb");
+        wordCategoriesTranslations.put(Word.WordCategory.PREPOSITION, "Präposition");
     }
 
     @Override

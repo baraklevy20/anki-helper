@@ -128,8 +128,9 @@ public class AnkiDatabase {
 
     public String getFullText(Word word) {
         String germanWord = (word.secondLanguageWord + (word.plural == null ? "" : "<br>" + word.plural)).replace(" ", "&nbsp");
+        String categoryTranslation = AnkiHelperApplication.language.wordCategoriesTranslations.get(word.wordCategory);
         String image = "<img src=\"anki_helper_image_" + word.id + "_0\" />" +
-                (word.wordCategory == null ? "" : "<div>" + AnkiHelperApplication.language.wordCategoriesTranslations.get(word.wordCategory) + "</div>") +
+                (word.wordCategory == null ? "" : "<div>" + (categoryTranslation == null ? word.wordCategory : categoryTranslation) + "</div>") +
                 "<div>" + word.additionalInformation + "</div>";
         String personal = ""; // not used
         String soundAndIpa = "[sound:anki_helper_sound_" + word.id + "_0]<div>" + word.ipa + "</div>";
