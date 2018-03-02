@@ -41,8 +41,12 @@ public class GoogleTranslateFragment extends Fragment {
 
         @JavascriptInterface
         public void catchGoogleTranslateWord(String googleTranslateWord, String wordCategory) {
-            AnkiHelperApplication.currentWord.wordCategory = wordCategory != null ?
-                    Word.WordCategory.valueOf(wordCategory.substring(0, wordCategory.length() - 1).toUpperCase()) : null;
+            try {
+                AnkiHelperApplication.currentWord.wordCategory = wordCategory != null ?
+                        Word.WordCategory.valueOf(wordCategory.substring(0, wordCategory.length() - 1).toUpperCase()) : null;
+            } catch (IllegalArgumentException e) {
+                AnkiHelperApplication.currentWord.wordCategory = null; // Not found
+            }
 
             if (isFirstToSecondLanguage) {
                 AnkiHelperApplication.currentWord.secondLanguageWord =

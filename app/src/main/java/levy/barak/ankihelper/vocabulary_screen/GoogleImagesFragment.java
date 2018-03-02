@@ -21,6 +21,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,6 +47,12 @@ public class GoogleImagesFragment extends Fragment {
             String[] parts = href.split("\\?");
             String[] attributes = href.split("&");
             String imageUrl = java.net.URLDecoder.decode(attributes[0].split("=")[1], "UTF-8");
+
+            // No support for vector graphics
+            if (imageUrl.endsWith("svg")) {
+                Toast.makeText(mContext.getContext(), "Unfortunately the app does not support .svg image files. Please pick another image", Toast.LENGTH_LONG).show();
+                return;
+            }
 
             // Move on to the next screen
             moveToNextScreen();
