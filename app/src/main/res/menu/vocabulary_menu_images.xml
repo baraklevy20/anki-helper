@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/vocabulary_menu_images_pick_image"
+        android:title="Load Image" />
 
     <item
     android:id="@+id/vocabulary_menu_images_search_in_english"
@@ -8,8 +11,4 @@
     <item
         android:id="@+id/vocabulary_menu_images_search_in_german"
         android:title="Search in German" />
-
-    <item
-        android:id="@+id/vocabulary_menu_images_search_in_german_with_prefix"
-        android:title="Search in German with prefix" />
 </menu>

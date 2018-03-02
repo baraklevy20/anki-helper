@@ -37,6 +37,7 @@ public class GrammarActivity extends Activity {
             wordButton.setTextOn(sentence.words[i]);
             wordButton.setTextOff(sentence.words[i]);
             wordButton.setText(sentence.words[i]);
+            wordButton.setChecked(true);
             int finalI = i;
             wordButton.setOnClickListener((v) -> sentence.isWordUsed[finalI] = wordButton.isChecked());
 

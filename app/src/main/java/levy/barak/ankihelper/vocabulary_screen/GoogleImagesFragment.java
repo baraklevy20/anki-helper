@@ -3,7 +3,9 @@ package levy.barak.ankihelper.vocabulary_screen;
 import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.ContentProviderResult;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,6 +22,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import levy.barak.ankihelper.AnkiHelperApplication;
@@ -27,6 +32,8 @@ import levy.barak.ankihelper.R;
 import levy.barak.ankihelper.utils.FileUtils;
 
 public class GoogleImagesFragment extends Fragment {
+    public static final int PICK_IMAGE = 0;
+
     public class WebAppInterface {
         private Fragment mContext;
 
@@ -45,7 +52,7 @@ public class GoogleImagesFragment extends Fragment {
 
             new Thread(() -> {
                 // Download it
-                String downloadName = "anki_helper_image_" + AnkiHelperApplication.currentWord.id + "_" + AnkiHelperApplication.currentWord.imagesUrl.size();
+                String downloadName = getDownloadPath();
                 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(imageUrl));
                 request.allowScanningByMediaScanner();
                 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "anki_helper/" + downloadName);
@@ -127,11 +134,60 @@ public class GoogleImagesFragment extends Fragment {
             case R.id.vocabulary_menu_images_search_in_german:
                 webView.loadUrl(getUrl(AnkiHelperApplication.language.getSearchableWord()));
                 return true;
-            case R.id.vocabulary_menu_images_search_in_german_with_prefix:
-                webView.loadUrl(getUrl(AnkiHelperApplication.currentWord.secondLanguageWord));
+            case R.id.vocabulary_menu_images_pick_image:
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PICK_IMAGE:
+                // If the user chose an image, this is -1
+                if (resultCode == -1) {
+                    copyImageFromFile(data.getData());
+
+                    // Move on to the next screen
+                    moveToNextScreen();
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+        }
+    }
+
+    public String getDownloadPath() {
+        return "anki_helper_image_" + AnkiHelperApplication.currentWord.id + "_" + AnkiHelperApplication.currentWord.imagesUrl.size();
+    }
+
+    public void copyImageFromFile(Uri imageUri) {
+        try {
+            InputStream input = getActivity().getContentResolver().openInputStream(imageUri);
+            FileOutputStream output = new FileOutputStream(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/anki_helper/" + getDownloadPath());
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = input.read(buffer)) != -1) {
+                output.write(buffer, 0, bytesRead);
+            }
+
+            input.close();
+            output.close();
+
+            // Add the image's URL
+            AnkiHelperApplication.currentWord.imagesUrl.add(getDownloadPath());
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
