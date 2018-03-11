@@ -29,6 +29,10 @@ public class GrammarActivity extends Activity {
         sentence.words = ((EditText)findViewById(R.id.grammarSentence)).getText().toString().split(" ");
         sentence.isWordUsed = new boolean[sentence.words.length];
 
+        for (int i = 0; i < sentence.isWordUsed.length; i++) {
+            sentence.isWordUsed[i] = true;
+        }
+
         LinearLayout layout = (LinearLayout) findViewById(R.id.grammarButtonsLayout);
 
         for (int i = 0; i < sentence.words.length; i++) {

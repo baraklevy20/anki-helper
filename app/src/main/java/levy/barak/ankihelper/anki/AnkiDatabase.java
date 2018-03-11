@@ -121,9 +121,20 @@ public class AnkiDatabase {
     }
 
     public String getFullText(Sentence sentence, int index) {
-        char separator = 0x1F;
-        return sentence.getBlankedSentence(index) + separator + separator + separator + sentence.words[index] +
-                separator + sentence.getFullSentence() + separator + separator + separator + separator;
+        final String separator = (char)0x1F + "";
+
+        String blankedSentence = sentence.getBlankedSentence(index);
+        String image = "";
+        String explanationOfTheWord = "";
+        String germanWord = sentence.words[index];
+        String fullSentence = sentence.getFullSentence();
+        String additionalInformation = "";
+        String makeTwoCards = "y"; // Must be y to have 2 cards
+        String spelling = "";
+        String copyPasteArea = "";
+
+        return String.join(separator, new String[] {blankedSentence, image, explanationOfTheWord,
+                    germanWord, fullSentence, additionalInformation, makeTwoCards, spelling, copyPasteArea});
     }
 
     public String getFullText(Word word) {
@@ -189,6 +200,7 @@ public class AnkiDatabase {
                 Sentence sentence = AnkiHelperApplication.allSentences.get(i);
                 insertSentenceNote(sentence, sentence.getFirstBlank());
                 insertSentenceCard(0, sentence.id);
+                insertSentenceCard(1, sentence.id);
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
