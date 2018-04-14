@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="levy.barak.ankihelper.vocabulary_screen.GoogleImagesFragment">
+    tools:context="levy.barak.ankihelper.common_screens.GoogleImagesFragment">
 
     <WebView
         android:id="@+id/googleImagesWebView"

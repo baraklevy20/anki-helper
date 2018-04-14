@@ -1,9 +1,8 @@
-package levy.barak.ankihelper.vocabulary_screen;
+package levy.barak.ankihelper.common_screens;
 
 import android.app.DownloadManager;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.ContentProviderResult;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -30,10 +29,15 @@ import java.io.UnsupportedEncodingException;
 
 import levy.barak.ankihelper.AnkiHelperApplication;
 import levy.barak.ankihelper.R;
+import levy.barak.ankihelper.grammar_screen.GrammarFormSentenceFragment;
 import levy.barak.ankihelper.utils.FileUtils;
+import levy.barak.ankihelper.vocabulary_screen.ForvoFragment;
 
 public class GoogleImagesFragment extends Fragment {
     public static final int PICK_IMAGE = 0;
+    public static final String ACTIVITY_SOURCE = "levy.barak.ankihelper.activity_source";
+
+    private GoogleImagesSources source;
 
     public class WebAppInterface {
         private Fragment mContext;
@@ -74,6 +78,7 @@ public class GoogleImagesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View fragment = inflater.inflate(R.layout.fragment_vocabulary_google_images, container, false);
+        this.source = GoogleImagesSources.values()[getArguments().getInt(ACTIVITY_SOURCE)];
 
         final WebView googleImagesWebView = (WebView) fragment.findViewById(R.id.googleImagesWebView);
 
@@ -104,21 +109,38 @@ public class GoogleImagesFragment extends Fragment {
             }
         });
 
-        googleImagesWebView.loadUrl(getUrl(AnkiHelperApplication.language.getSearchableWord()));
+        if (source == GoogleImagesSources.VOCABULARY) {
+            googleImagesWebView.loadUrl(getUrl(AnkiHelperApplication.language.getSearchableWord()));
+        }
+        else {
+            googleImagesWebView.loadUrl(getUrl(""));
+        }
 
         // Enable the menu on this fragment
-        setHasOptionsMenu(true);
+        if (source == GoogleImagesSources.VOCABULARY) {
+            setHasOptionsMenu(true);
+        }
 
         return fragment;
     }
 
     public void moveToNextScreen() {
-        ForvoFragment newFragment = new ForvoFragment();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        if (source == GoogleImagesSources.VOCABULARY) {
+            ForvoFragment newFragment = new ForvoFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-        transaction.replace(R.id.fragmentsContainer, newFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+            transaction.replace(R.id.vocabularyFragmentsContainer, newFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
+        else if (source == GoogleImagesSources.GRAMMAR) {
+            GrammarFormSentenceFragment newFragment = new GrammarFormSentenceFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            transaction.replace(R.id.grammarFragmentsContainer, newFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
     }
 
     public String getUrl(String word) {
@@ -133,23 +155,27 @@ public class GoogleImagesFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final WebView webView = (WebView) getActivity().findViewById(R.id.googleImagesWebView);
-        switch (item.getItemId()) {
-            case R.id.vocabulary_menu_images_search_in_english:
-                webView.loadUrl(getUrl(AnkiHelperApplication.currentWord.firstLanguageWord));
-                return true;
-            case R.id.vocabulary_menu_images_search_in_german:
-                webView.loadUrl(getUrl(AnkiHelperApplication.language.getSearchableWord()));
-                return true;
-            case R.id.vocabulary_menu_images_pick_image:
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (source == GoogleImagesSources.VOCABULARY) {
+            final WebView webView = (WebView) getActivity().findViewById(R.id.googleImagesWebView);
+            switch (item.getItemId()) {
+                case R.id.vocabulary_menu_images_search_in_english:
+                    webView.loadUrl(getUrl(AnkiHelperApplication.currentWord.firstLanguageWord));
+                    return true;
+                case R.id.vocabulary_menu_images_search_in_german:
+                    webView.loadUrl(getUrl(AnkiHelperApplication.language.getSearchableWord()));
+                    return true;
+                case R.id.vocabulary_menu_images_pick_image:
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+                    return true;
+                default:
+                    return super.onOptionsItemSelected(item);
+            }
         }
+
+        return false;
     }
 
     @Override
@@ -171,7 +197,11 @@ public class GoogleImagesFragment extends Fragment {
     }
 
     public String getDownloadPath() {
-        return "anki_helper_image_" + AnkiHelperApplication.currentWord.id + "_" + AnkiHelperApplication.currentWord.imagesUrl.size();
+        if (source == GoogleImagesSources.VOCABULARY) {
+            return "anki_helper_image_" + AnkiHelperApplication.currentWord.id + "_" + AnkiHelperApplication.currentWord.imagesUrl.size();
+        }
+
+        return "anki_helper_image_" + AnkiHelperApplication.currentSentence.id;
     }
 
     public void copyImageFromFile(Uri imageUri) {

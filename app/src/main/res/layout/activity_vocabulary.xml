@@ -8,7 +8,7 @@
     android:layout_height="match_parent">
 
     <FrameLayout
-        android:id="@+id/fragmentsContainer"
+        android:id="@+id/vocabularyFragmentsContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
@@ -26,7 +26,7 @@
         android:layout_marginTop="8dp"
         android:text="Additional info."
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/fragmentsContainer"
+        app:layout_constraintBottom_toTopOf="@+id/vocabularyFragmentsContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

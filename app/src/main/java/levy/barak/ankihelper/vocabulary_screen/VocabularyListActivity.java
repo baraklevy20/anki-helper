@@ -32,6 +32,7 @@ import levy.barak.ankihelper.AnkiHelperApplication;
 import levy.barak.ankihelper.R;
 import levy.barak.ankihelper.anki.AnkiDatabase;
 import levy.barak.ankihelper.anki.Word;
+import levy.barak.ankihelper.grammar_screen.GrammarActivity;
 
 public class VocabularyListActivity extends Activity {
     private Animator mCurrentAnimator;

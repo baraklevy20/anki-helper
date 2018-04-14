@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".vocabulary_screen.GrammarActivity" />
+        <activity android:name=".grammar_screen.GrammarActivity" />
 
         <activity android:name=".vocabulary_screen.VocabularyListActivity">
             <intent-filter>

@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -18,10 +19,14 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import levy.barak.ankihelper.AnkiHelperApplication;
 import levy.barak.ankihelper.R;
 import levy.barak.ankihelper.anki.Word;
+import levy.barak.ankihelper.common_screens.GoogleImagesFragment;
+import levy.barak.ankihelper.common_screens.GoogleImagesSources;
 import levy.barak.ankihelper.utils.FileUtils;
 
 /**
@@ -71,9 +76,13 @@ public class GoogleTranslateFragment extends Fragment {
 
         public void moveToNextScreen() {
             GoogleImagesFragment newFragment = new GoogleImagesFragment();
+            Bundle bundle = new Bundle();
+            bundle.putInt(GoogleImagesFragment.ACTIVITY_SOURCE, GoogleImagesSources.VOCABULARY.ordinal());
+            newFragment.setArguments(bundle);
+
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-            transaction.replace(R.id.fragmentsContainer, newFragment);
+            transaction.replace(R.id.vocabularyFragmentsContainer, newFragment);
             transaction.addToBackStack(null);
             transaction.commit();
         }
@@ -124,9 +133,12 @@ public class GoogleTranslateFragment extends Fragment {
         String wordToTranslate = isFirstToSecondLanguage ? AnkiHelperApplication.currentWord.firstLanguageWord.toLowerCase()
                 : AnkiHelperApplication.currentWord.secondLanguageWord;
 
+        Map<String, String> customHeaders = new HashMap<String, String>();
+        customHeaders.put("accept-language", "en-US,en;q=0.9,he;q=0.8,de;q=0.7,yi;q=0.6");
+
         googleTranslateEditView.loadUrl("https://translate.google.com/m/translate#" + first + "/" +
                 second + "/" +
-                wordToTranslate);
+                wordToTranslate, customHeaders);
 
         return fragment;
     }

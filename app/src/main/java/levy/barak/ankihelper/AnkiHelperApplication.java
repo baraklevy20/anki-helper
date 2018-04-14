@@ -24,6 +24,7 @@ public class AnkiHelperApplication extends Application {
     private static SharedPreferences prefs;
 
     public static Word currentWord;
+    public static Sentence currentSentence;
 
     public static ArrayList<Word> allWords;
 
