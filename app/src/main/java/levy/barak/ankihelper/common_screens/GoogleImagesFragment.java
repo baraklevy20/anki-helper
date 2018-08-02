@@ -103,7 +103,7 @@ public class GoogleImagesFragment extends Fragment {
 
                 Log.d("google_images_url", url + "\t" + resourcesLoaded);
                 // We only attach the script AFTER we load the first resource which is the main URL
-                if (resourcesLoaded == 10) {
+                if (resourcesLoaded == 1) {
                     googleImagesWebView.evaluateJavascript(FileUtils.getFileContent(googleImagesWebView.getContext(), "googleImages.js"), null);
                 }
 
