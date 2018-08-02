@@ -24,6 +24,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,7 +50,7 @@ public class GoogleImagesFragment extends Fragment {
         }
 
         @JavascriptInterface
-        public void catchHref(String imageUrl) throws UnsupportedEncodingException {
+        public void catchHref(String imageUrl) {
             // No support for vector graphics
             if (imageUrl.endsWith("svg")) {
                 Toast.makeText(mContext.getContext(), "Unfortunately the app does not support .svg image files. Please pick another image", Toast.LENGTH_LONG).show();
@@ -79,11 +80,14 @@ public class GoogleImagesFragment extends Fragment {
         this.source = GoogleImagesSources.values()[getArguments().getInt(ACTIVITY_SOURCE)];
 
         WebView googleImagesWebView = (WebView) fragment.findViewById(R.id.googleImagesWebView);
-        googleImagesWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
 
         WebSettings settings = googleImagesWebView.getSettings();
         settings.setJavaScriptEnabled(true);
-        settings.setDomStorageEnabled(true);
+
+        // Must clear the cache every time we start the screen
+        // For some reason, the JS part doesn't work properly without it
+        googleImagesWebView.clearCache(true);
+
         googleImagesWebView.setWebViewClient(new WebViewClient() {
             int resourcesLoaded;
 
@@ -99,7 +103,7 @@ public class GoogleImagesFragment extends Fragment {
 
                 Log.d("google_images_url", url + "\t" + resourcesLoaded);
                 // We only attach the script AFTER we load the first resource which is the main URL
-                if (resourcesLoaded == 1) {
+                if (resourcesLoaded == 10) {
                     googleImagesWebView.evaluateJavascript(FileUtils.getFileContent(googleImagesWebView.getContext(), "googleImages.js"), null);
                 }
 
@@ -118,6 +122,8 @@ public class GoogleImagesFragment extends Fragment {
         if (source == GoogleImagesSources.VOCABULARY) {
             setHasOptionsMenu(true);
         }
+
+        googleImagesWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
 
         return fragment;
     }
