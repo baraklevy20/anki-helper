@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,11 +49,7 @@ public class GoogleImagesFragment extends Fragment {
         }
 
         @JavascriptInterface
-        public void catchHref(String href) throws UnsupportedEncodingException {
-            String[] parts = href.split("\\?");
-            String[] attributes = href.split("&");
-            String imageUrl = java.net.URLDecoder.decode(attributes[0].split("=")[1], "UTF-8");
-
+        public void catchHref(String imageUrl) throws UnsupportedEncodingException {
             // No support for vector graphics
             if (imageUrl.endsWith("svg")) {
                 Toast.makeText(mContext.getContext(), "Unfortunately the app does not support .svg image files. Please pick another image", Toast.LENGTH_LONG).show();
@@ -80,8 +78,7 @@ public class GoogleImagesFragment extends Fragment {
         View fragment = inflater.inflate(R.layout.fragment_vocabulary_google_images, container, false);
         this.source = GoogleImagesSources.values()[getArguments().getInt(ACTIVITY_SOURCE)];
 
-        final WebView googleImagesWebView = (WebView) fragment.findViewById(R.id.googleImagesWebView);
-
+        WebView googleImagesWebView = (WebView) fragment.findViewById(R.id.googleImagesWebView);
         googleImagesWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
 
         WebSettings settings = googleImagesWebView.getSettings();
@@ -100,6 +97,7 @@ public class GoogleImagesFragment extends Fragment {
             public void onLoadResource(WebView view, String url) {
                 super.onLoadResource(view, url);
 
+                Log.d("google_images_url", url + "\t" + resourcesLoaded);
                 // We only attach the script AFTER we load the first resource which is the main URL
                 if (resourcesLoaded == 1) {
                     googleImagesWebView.evaluateJavascript(FileUtils.getFileContent(googleImagesWebView.getContext(), "googleImages.js"), null);

@@ -37,7 +37,7 @@ public class AnkiDatabase {
 
     public AnkiDatabase(Context context, boolean isDebug) {
         this.context = context;
-        this.deckId = isDebug ? 1508871866832L : 1508871866835L;
+        this.deckId = isDebug ? 123456789L : 1508871866835L;
     }
 
     public void generateDatabase() {
