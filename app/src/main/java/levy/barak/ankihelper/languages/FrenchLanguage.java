@@ -63,14 +63,18 @@ public class FrenchLanguage extends Language {
 
         // Get the example sentences
         Element differentDefinitionsElement = doc.select("ol").first();
-        AnkiHelperApp.currentWord.exampleSentences = "";
+        AnkiHelperApp.currentWord.exampleSentences = "<ul>";
         for (Element definitionElement : differentDefinitionsElement.children()) {
             Element sentencesPerDefinition = definitionElement.select("ul").first();
 
             if (sentencesPerDefinition != null) {
-                AnkiHelperApp.currentWord.exampleSentences += sentencesPerDefinition.text();
+                for (Element sentence : sentencesPerDefinition.children()) {
+                    AnkiHelperApp.currentWord.exampleSentences += "<li>" + sentence.child(0).text() + "</li>";
+                }
             }
         }
+
+        AnkiHelperApp.currentWord.exampleSentences += "</ul>";
 
         // Change the word by adding the definite article in the following cases:
         // If the word category is null
@@ -89,7 +93,7 @@ public class FrenchLanguage extends Language {
 
         // If it's a noun, get it's plural form as well
         if (AnkiHelperApp.currentWord.wordCategory == Word.WordCategory.NOUN) {
-            AnkiHelperApp.currentWord.plural = doc.select(".flextable.flextable-fr-mfsp").first().child(0).child(1).select("td").get(1).child(0).text();
+            AnkiHelperApp.currentWord.plural = "les " + doc.select(".flextable.flextable-fr-mfsp").first().child(0).child(1).select("td").get(1).child(0).text();
         }
     }
 }
