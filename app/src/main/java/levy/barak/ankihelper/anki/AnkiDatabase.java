@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.AnkiHelperApp;
 import levy.barak.ankihelper.utils.FileUtils;
 
 /**
@@ -139,7 +139,7 @@ public class AnkiDatabase {
 
     public String getFullText(Word word) {
         String germanWord = (word.secondLanguageWord + (word.plural == null ? "" : "<br>" + word.plural)).replace(" ", "&nbsp");
-        String categoryTranslation = AnkiHelperApplication.language.wordCategoriesTranslations.get(word.wordCategory);
+        String categoryTranslation = AnkiHelperApp.language.wordCategoriesTranslations.get(word.wordCategory);
         String image = "<img src=\"anki_helper_image_" + word.id + "_0\" />" +
                 (word.wordCategory == null ? "" : "<div>" + (categoryTranslation == null ? word.wordCategory : categoryTranslation) + "</div>") +
                 "<div>" + word.additionalInformation + "</div>";
@@ -169,12 +169,12 @@ public class AnkiDatabase {
     public void createMedia() {
         // Create media
         String ankiHelperPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/anki_helper";
-        String[] medias = new String[AnkiHelperApplication.allWords.size() * 2];
+        String[] medias = new String[AnkiHelperApp.allWords.size() * 2];
 
         // Add notes and cards
-        for (int i = 0; i < AnkiHelperApplication.allWords.size(); i++) {
+        for (int i = 0; i < AnkiHelperApp.allWords.size(); i++) {
             try {
-                Word word = AnkiHelperApplication.allWords.get(i);
+                Word word = AnkiHelperApp.allWords.get(i);
                 insertWordNote(word);
                 insertWordCard(0, word.id);
                 insertWordCard(1, word.id);
@@ -195,9 +195,9 @@ public class AnkiDatabase {
             }
         }
 
-        for (int i = 0; i < AnkiHelperApplication.allSentences.size(); i++) {
+        for (int i = 0; i < AnkiHelperApp.allSentences.size(); i++) {
             try {
-                Sentence sentence = AnkiHelperApplication.allSentences.get(i);
+                Sentence sentence = AnkiHelperApp.allSentences.get(i);
                 insertSentenceNote(sentence, sentence.getFirstBlank());
                 insertSentenceCard(0, sentence.id);
                 insertSentenceCard(1, sentence.id);
@@ -222,13 +222,13 @@ public class AnkiDatabase {
         }
 
         // Create ZIP
-        String[] fileNames = new String[AnkiHelperApplication.allWords.size() * 2 + 2];
-        for (int i = 0; i < AnkiHelperApplication.allWords.size() * 2; i++) {
+        String[] fileNames = new String[AnkiHelperApp.allWords.size() * 2 + 2];
+        for (int i = 0; i < AnkiHelperApp.allWords.size() * 2; i++) {
             fileNames[i] = ankiHelperPath + "/" + i;
         }
 
-        fileNames[AnkiHelperApplication.allWords.size() * 2] = ankiHelperPath + "/media";
-        fileNames[AnkiHelperApplication.allWords.size() * 2 + 1] = ankiHelperPath + "/collection.anki2";
+        fileNames[AnkiHelperApp.allWords.size() * 2] = ankiHelperPath + "/media";
+        fileNames[AnkiHelperApp.allWords.size() * 2 + 1] = ankiHelperPath + "/collection.anki2";
 
         zip(fileNames, Environment.getExternalStorageDirectory() + "/AnkiDroid/AnkiHelper.apkg");
     }

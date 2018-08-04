@@ -4,7 +4,7 @@ import android.app.Fragment;
 
 import org.jsoup.nodes.Document;
 
-import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.AnkiHelperApp;
 import levy.barak.ankihelper.anki.Word;
 
 /**
@@ -38,10 +38,10 @@ public class HebrewLanguage extends Language {
     @Override
     public String getSearchableWord() {
         String result = "";
-        String word = AnkiHelperApplication.currentWord.secondLanguageWord;
+        String word = AnkiHelperApp.currentWord.secondLanguageWord;
 
         for (int i = 0; i < word.length(); i++) {
-            // Remove Niqqud
+            // Removes Niqqud
             if (word.charAt(i) >= 0x5D0 && word.charAt(i) <= 0x5EA) {
                 result += word.charAt(i);
             }
@@ -53,6 +53,11 @@ public class HebrewLanguage extends Language {
     @Override
     public String parseGoogleTranslateWord(String googleTranslateWord, Word.WordCategory wordCategory) {
         return googleTranslateWord;
+    }
+
+    @Override
+    public String parseTypedWord(String word) {
+        return word;
     }
 
     @Override

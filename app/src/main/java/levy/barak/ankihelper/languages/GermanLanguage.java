@@ -9,7 +9,7 @@ import org.jsoup.select.Elements;
 
 import java.util.HashMap;
 
-import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.AnkiHelperApp;
 import levy.barak.ankihelper.anki.Word;
 
 /**
@@ -49,7 +49,7 @@ public class GermanLanguage extends Language {
 
     @Override
     public String getSearchableWord() {
-        String[] split = AnkiHelperApplication.currentWord.secondLanguageWord.split(" ");
+        String[] split = AnkiHelperApp.currentWord.secondLanguageWord.split(" ");
         return split[split.length - 1];
     }
 
@@ -76,6 +76,11 @@ public class GermanLanguage extends Language {
     }
 
     @Override
+    public String parseTypedWord(String word) {
+        return word;
+    }
+
+    @Override
     public void getInformationFromWiktionary(Fragment fragment, Document doc, boolean isFirstToSecondLanguage) {
         Elements ipas = doc.select(".ipa");
 
@@ -84,7 +89,7 @@ public class GermanLanguage extends Language {
             return;
         }
 
-        AnkiHelperApplication.currentWord.ipa = ipas.first().text();
+        AnkiHelperApp.currentWord.ipa = ipas.first().text();
 
         Element examplesElement = doc.select("[title=Verwendungsbeispielsätze]").first();
 
@@ -100,29 +105,29 @@ public class GermanLanguage extends Language {
                 currentNode = currentNode.nextElementSibling();
             }
 
-            AnkiHelperApplication.currentWord.exampleSentences = html;
+            AnkiHelperApp.currentWord.exampleSentences = html;
         }
 
         // Change the word by adding the definite article in the following cases:
         // If the word category is null
         // If we're translating from German to English
         // If it's a noun with one word (no definite article)
-        if (!isFirstToSecondLanguage && AnkiHelperApplication.currentWord.wordCategory == Word.WordCategory.NOUN ||
-                isFirstToSecondLanguage && (AnkiHelperApplication.currentWord.wordCategory == null ||
-                AnkiHelperApplication.currentWord.wordCategory == Word.WordCategory.NOUN &&
-                AnkiHelperApplication.currentWord.secondLanguageWord.split(" ").length == 1)) {
+        if (!isFirstToSecondLanguage && AnkiHelperApp.currentWord.wordCategory == Word.WordCategory.NOUN ||
+                isFirstToSecondLanguage && (AnkiHelperApp.currentWord.wordCategory == null ||
+                AnkiHelperApp.currentWord.wordCategory == Word.WordCategory.NOUN &&
+                AnkiHelperApp.currentWord.secondLanguageWord.split(" ").length == 1)) {
             String fullType = doc.select(".mw-headline").get(1).id();
             char gender = fullType.charAt(fullType.length() - 1); // m, f or n
             String article = gender == 'm' ? "der" :
                              gender == 'f' ? "die" :
                                              "das";
 
-            AnkiHelperApplication.currentWord.secondLanguageWord = article + " " + AnkiHelperApplication.currentWord.secondLanguageWord;
+            AnkiHelperApp.currentWord.secondLanguageWord = article + " " + AnkiHelperApp.currentWord.secondLanguageWord;
         }
 
         // If it's a noun, get it's plural form as well
-        if (AnkiHelperApplication.currentWord.wordCategory == Word.WordCategory.NOUN) {
-            AnkiHelperApplication.currentWord.plural =
+        if (AnkiHelperApp.currentWord.wordCategory == Word.WordCategory.NOUN) {
+            AnkiHelperApp.currentWord.plural =
                     doc.select("[title=Hilfe:Plural]").first().parent().parent().nextElementSibling().child(2).text();
         }
     }

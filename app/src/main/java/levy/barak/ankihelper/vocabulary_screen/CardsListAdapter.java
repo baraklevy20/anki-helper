@@ -20,7 +20,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.AnkiHelperApp;
 import levy.barak.ankihelper.R;
 import levy.barak.ankihelper.anki.Word;
 import levy.barak.ankihelper.utils.ImageUtils;
@@ -80,7 +80,7 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
 
         // Set word and IPA
         String plural = (word.plural == null ? "" : "/" + word.plural);
-        String categoryTranslation = AnkiHelperApplication.language.wordCategoriesTranslations.get(word.wordCategory);
+        String categoryTranslation = AnkiHelperApp.language.wordCategoriesTranslations.get(word.wordCategory);
         String category = (word.wordCategory == null ? "" :
                 " (" + (categoryTranslation == null ? word.wordCategory : categoryTranslation) + ")");
 
@@ -119,9 +119,9 @@ public class CardsListAdapter extends RecyclerView.Adapter<CardsListAdapter.Data
                     .setNegativeButton("No", null).setPositiveButton("Yes", (dialog, which) -> {
                 mWords.remove(position);
                 notifyDataSetChanged();
-                AnkiHelperApplication.writeWords();
+                AnkiHelperApp.writeWords();
 
-                if (mWords.size() + AnkiHelperApplication.allSentences.size() == 0) {
+                if (mWords.size() + AnkiHelperApp.allSentences.size() == 0) {
                     mVocabularyListActivity.findViewById(R.id.generateCardsButton).setEnabled(false);
                     mVocabularyListActivity.findViewById(R.id.clearButton).setEnabled(false);
                 }

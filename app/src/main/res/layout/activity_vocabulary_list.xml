@@ -8,6 +8,29 @@
     android:layout_height="match_parent"
     tools:context="levy.barak.ankihelper.vocabulary_screen.VocabularyListActivity">
 
+    <Spinner
+        android:id="@+id/ankiDecksSpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/languagesSpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:fadeScrollbars="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ankiDecksSpinner" />
+
     <EditText
         android:id="@+id/englishWordEditText"
         android:layout_width="0dp"
@@ -22,7 +45,7 @@
         android:text="dog"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ankiDecksSpinner" />
+        app:layout_constraintTop_toBottomOf="@+id/languagesSpinner" />
 
     <Button
         android:id="@+id/toGermanButton"
@@ -128,16 +151,5 @@
         app:layout_constraintEnd_toStartOf="@+id/debugLabel"
         app:layout_constraintStart_toEndOf="@+id/toEnglishButton"
         app:layout_constraintTop_toBottomOf="@+id/generateCardsButton" />
-
-    <Spinner
-        android:id="@+id/ankiDecksSpinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

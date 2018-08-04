@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,13 +23,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
-import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.AnkiHelperApp;
 import levy.barak.ankihelper.R;
 import levy.barak.ankihelper.grammar_screen.GrammarFormSentenceFragment;
 import levy.barak.ankihelper.utils.FileUtils;
@@ -66,7 +63,7 @@ public class GoogleImagesFragment extends Fragment {
                 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(imageUrl));
                 request.allowScanningByMediaScanner();
                 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "anki_helper/" + downloadName);
-                AnkiHelperApplication.currentWord.imagesUrl.add(downloadName);
+                AnkiHelperApp.currentWord.imagesUrl.add(downloadName);
                 DownloadManager dm = (DownloadManager) mContext.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
                 dm.enqueue(request);
             }).start();
@@ -112,7 +109,7 @@ public class GoogleImagesFragment extends Fragment {
         });
 
         if (source == GoogleImagesSources.VOCABULARY) {
-            googleImagesWebView.loadUrl(getUrl(AnkiHelperApplication.language.getSearchableWord()));
+            googleImagesWebView.loadUrl(getUrl(AnkiHelperApp.language.getSearchableWord()));
         }
         else {
             googleImagesWebView.loadUrl(getUrl(""));
@@ -163,10 +160,10 @@ public class GoogleImagesFragment extends Fragment {
             final WebView webView = (WebView) getActivity().findViewById(R.id.googleImagesWebView);
             switch (item.getItemId()) {
                 case R.id.vocabulary_menu_images_search_in_english:
-                    webView.loadUrl(getUrl(AnkiHelperApplication.currentWord.firstLanguageWord));
+                    webView.loadUrl(getUrl(AnkiHelperApp.currentWord.firstLanguageWord));
                     return true;
                 case R.id.vocabulary_menu_images_search_in_german:
-                    webView.loadUrl(getUrl(AnkiHelperApplication.language.getSearchableWord()));
+                    webView.loadUrl(getUrl(AnkiHelperApp.language.getSearchableWord()));
                     return true;
                 case R.id.vocabulary_menu_images_pick_image:
                     Intent intent = new Intent();
@@ -202,10 +199,10 @@ public class GoogleImagesFragment extends Fragment {
 
     public String getDownloadPath() {
         if (source == GoogleImagesSources.VOCABULARY) {
-            return "anki_helper_image_" + AnkiHelperApplication.currentWord.id + "_" + AnkiHelperApplication.currentWord.imagesUrl.size();
+            return "anki_helper_image_" + AnkiHelperApp.currentWord.id + "_" + AnkiHelperApp.currentWord.imagesUrl.size();
         }
 
-        return "anki_helper_image_" + AnkiHelperApplication.currentSentence.id;
+        return "anki_helper_image_" + AnkiHelperApp.currentSentence.id;
     }
 
     public void copyImageFromFile(Uri imageUri) {
@@ -225,7 +222,7 @@ public class GoogleImagesFragment extends Fragment {
             output.close();
 
             // Add the image's URL
-            AnkiHelperApplication.currentWord.imagesUrl.add(getDownloadPath());
+            AnkiHelperApp.currentWord.imagesUrl.add(getDownloadPath());
 
         } catch (IOException e) {
             e.printStackTrace();

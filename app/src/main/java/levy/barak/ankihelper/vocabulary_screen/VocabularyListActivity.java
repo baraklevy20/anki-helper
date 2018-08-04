@@ -30,11 +30,12 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.AnkiHelperApp;
 import levy.barak.ankihelper.R;
 import levy.barak.ankihelper.anki.AnkiDatabase;
 import levy.barak.ankihelper.anki.Word;
 import levy.barak.ankihelper.grammar_screen.GrammarActivity;
+import levy.barak.ankihelper.languages.Language;
 
 public class VocabularyListActivity extends Activity {
     private Animator mCurrentAnimator;
@@ -63,13 +64,13 @@ public class VocabularyListActivity extends Activity {
             requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         }
 
-        AnkiHelperApplication.readWords();
+        AnkiHelperApp.readWords();
 
         RecyclerView cardsList = (RecyclerView) findViewById(R.id.cardsList);
         cardsList.getRecycledViewPool().setMaxRecycledViews(0,0);
         cardsList.setHasFixedSize(true);
         cardsList.setLayoutManager(new LinearLayoutManager(this));
-        cardsList.setAdapter(new CardsListAdapter(this, AnkiHelperApplication.allWords));
+        cardsList.setAdapter(new CardsListAdapter(this, AnkiHelperApp.allWords));
 
         EditText editText = (EditText) findViewById(R.id.englishWordEditText);
 
@@ -88,25 +89,44 @@ public class VocabularyListActivity extends Activity {
                 android.R.integer.config_shortAnimTime);
 
         // Disable the generate/clear buttons if necessary
-        if (AnkiHelperApplication.allWords.size() + AnkiHelperApplication.allSentences.size() == 0) {
+        if (AnkiHelperApp.allWords.size() + AnkiHelperApp.allSentences.size() == 0) {
             findViewById(R.id.generateCardsButton).setEnabled(false);
             findViewById(R.id.clearButton).setEnabled(false);
         }
 
         // Populate the decks spinner
-        String[] arraySpinner = AnkiHelperApplication.decks.keySet().toArray(new String[AnkiHelperApplication.decks.keySet().size()]);
+        String[] decksNames = AnkiHelperApp.decks.keySet().toArray(new String[AnkiHelperApp.decks.keySet().size()]);
         Spinner decksSpinner = (Spinner) findViewById(R.id.ankiDecksSpinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, arraySpinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, decksNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         decksSpinner.setAdapter(adapter);
 
-        // Set the value of the spinner to the last selected deck
-        decksSpinner.setSelection(adapter.getPosition(AnkiHelperApplication.lastUsedDeck));
+        // Set the value of the deck spinner to the last selected deck
+        decksSpinner.setSelection(adapter.getPosition(AnkiHelperApp.lastUsedDeck));
         decksSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                AnkiHelperApplication.saveLastUsedDeck((String) decksSpinner.getSelectedItem());
+                AnkiHelperApp.saveLastUsedDeck((String) decksSpinner.getSelectedItem());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        // Set the value of the language spinner to the last selected deck
+        Spinner languageSpinner = (Spinner) findViewById(R.id.languagesSpinner);
+        adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, Language.getLanguages());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        languageSpinner.setAdapter(adapter);
+        languageSpinner.setSelection(adapter.getPosition(AnkiHelperApp.lastUsedLanguage));
+        languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                AnkiHelperApp.onLanguageChanged((String) languageSpinner.getSelectedItem());
             }
 
             @Override
@@ -131,7 +151,8 @@ public class VocabularyListActivity extends Activity {
             editText.setError("Please enter a word");
         }
         else {
-            AnkiHelperApplication.currentWord = new Word(editText.getText().toString(), isFirstToSecondLanguage);
+            AnkiHelperApp.currentWord = new Word(
+                    AnkiHelperApp.language.parseTypedWord(editText.getText().toString()), isFirstToSecondLanguage);
             startActivity(new Intent(this, VocabularyActivity.class).putExtra(
                     GoogleTranslateFragment.FIRST_LANGUAGE_TO_SECOND_LANGUAGE, isFirstToSecondLanguage));
         }
@@ -148,7 +169,7 @@ public class VocabularyListActivity extends Activity {
         builder.setMessage("Are you sure you want to generate the cards? This would remove the cards and generate a ZIP for Anki.")
                 .setPositiveButton("Yes", (dialog, which) -> {
             String selectedDeck = ((Spinner)findViewById(R.id.ankiDecksSpinner)).getSelectedItem().toString();
-            //long selectedId = AnkiHelperApplication.decks.get(selectedDeck);
+            //long selectedId = AnkiHelperApp.decks.get(selectedDeck);
             AnkiDatabase ankiDatabase = new AnkiDatabase(this, selectedDeck);
 
             ankiDatabase.generateDatabase();
@@ -300,12 +321,12 @@ public class VocabularyListActivity extends Activity {
 
     public void clearList() {
         // Clear the words
-        AnkiHelperApplication.allWords.clear();
-        AnkiHelperApplication.writeWords();
+        AnkiHelperApp.allWords.clear();
+        AnkiHelperApp.writeWords();
 
         // Clear the sentences
-        AnkiHelperApplication.allSentences.clear();;
-        AnkiHelperApplication.writeSentences();
+        AnkiHelperApp.allSentences.clear();;
+        AnkiHelperApp.writeSentences();
 
         File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +
                 "/anki_helper");

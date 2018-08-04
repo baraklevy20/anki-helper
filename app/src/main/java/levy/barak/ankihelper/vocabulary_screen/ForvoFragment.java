@@ -23,7 +23,7 @@ import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 
-import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.AnkiHelperApp;
 import levy.barak.ankihelper.R;
 
 public class ForvoFragment extends Fragment {
@@ -36,7 +36,7 @@ public class ForvoFragment extends Fragment {
 
         @Override
         public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-            String downloadName = "anki_helper_sound_" + AnkiHelperApplication.currentWord.id + "_" + AnkiHelperApplication.currentWord.soundsUrl.size();
+            String downloadName = "anki_helper_sound_" + AnkiHelperApp.currentWord.id + "_" + AnkiHelperApp.currentWord.soundsUrl.size();
 
             // Download it
             DownloadManager.Request request = new DownloadManager.Request(
@@ -48,13 +48,13 @@ public class ForvoFragment extends Fragment {
             dm.enqueue(request);
 
             // Get the additional information
-            AnkiHelperApplication.currentWord.additionalInformation =
+            AnkiHelperApp.currentWord.additionalInformation =
                     ((EditText)getActivity().findViewById(R.id.vocabularyAdditionalInfoEditText)).getText().toString();
 
             // Add the sound and write the word
-            AnkiHelperApplication.currentWord.soundsUrl.add(downloadName);
-            AnkiHelperApplication.allWords.add(AnkiHelperApplication.currentWord);
-            AnkiHelperApplication.writeWords();
+            AnkiHelperApp.currentWord.soundsUrl.add(downloadName);
+            AnkiHelperApp.allWords.add(AnkiHelperApp.currentWord);
+            AnkiHelperApp.writeWords();
 
             startActivity(new Intent(forvoWebView.getContext(), VocabularyListActivity.class));
         }
@@ -76,7 +76,7 @@ public class ForvoFragment extends Fragment {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 try {
                     String url = java.net.URLDecoder.decode(request.getUrl().toString().toLowerCase(), "UTF-8");
-                    String word = AnkiHelperApplication.language.getSearchableWord().toLowerCase();
+                    String word = AnkiHelperApp.language.getSearchableWord().toLowerCase();
 
                     Log.i("requestedUrl", url);
 
@@ -95,7 +95,7 @@ public class ForvoFragment extends Fragment {
             }
         });
 
-        forvoWebView.loadUrl("https://forvo.com/word/de/" + AnkiHelperApplication.language.getSearchableWord() + "/");
+        forvoWebView.loadUrl("https://forvo.com/word/de/" + AnkiHelperApp.language.getSearchableWord() + "/");
         CookieManager.getInstance().setAcceptCookie(true);
 
         return fragment;

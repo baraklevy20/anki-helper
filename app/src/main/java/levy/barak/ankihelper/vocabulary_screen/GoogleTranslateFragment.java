@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -22,7 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.AnkiHelperApp;
 import levy.barak.ankihelper.R;
 import levy.barak.ankihelper.anki.Word;
 import levy.barak.ankihelper.common_screens.GoogleImagesFragment;
@@ -47,18 +46,18 @@ public class GoogleTranslateFragment extends Fragment {
         @JavascriptInterface
         public void catchGoogleTranslateWord(String googleTranslateWord, String wordCategory) {
             try {
-                AnkiHelperApplication.currentWord.wordCategory = wordCategory != null ?
+                AnkiHelperApp.currentWord.wordCategory = wordCategory != null ?
                         Word.WordCategory.valueOf(wordCategory.substring(0, wordCategory.length() - 1).toUpperCase()) : null;
             } catch (IllegalArgumentException e) {
-                AnkiHelperApplication.currentWord.wordCategory = null; // Not found
+                AnkiHelperApp.currentWord.wordCategory = null; // Not found
             }
 
             if (isFirstToSecondLanguage) {
-                AnkiHelperApplication.currentWord.secondLanguageWord =
-                        AnkiHelperApplication.language.parseGoogleTranslateWord(googleTranslateWord, AnkiHelperApplication.currentWord.wordCategory);
+                AnkiHelperApp.currentWord.secondLanguageWord =
+                        AnkiHelperApp.language.parseGoogleTranslateWord(googleTranslateWord, AnkiHelperApp.currentWord.wordCategory);
             }
             else {
-                AnkiHelperApplication.currentWord.firstLanguageWord = googleTranslateWord;
+                AnkiHelperApp.currentWord.firstLanguageWord = googleTranslateWord;
             }
 
             // Move to the google images activity
@@ -67,7 +66,7 @@ public class GoogleTranslateFragment extends Fragment {
             new Thread(() -> {
                 // Get additional information about the word
                 try {
-                    getWordInformationFromWiki(AnkiHelperApplication.language.getSearchableWord());
+                    getWordInformationFromWiki(AnkiHelperApp.language.getSearchableWord());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -88,8 +87,8 @@ public class GoogleTranslateFragment extends Fragment {
         }
 
         public void getWordInformationFromWiki(String word) throws IOException {
-            Connection connection = Jsoup.connect("https://" + AnkiHelperApplication.language.getWiktionaryLanguageCode() + ".wiktionary.org/wiki/" + word);
-            AnkiHelperApplication.language.getInformationFromWiktionary(mContext, connection.get(), isFirstToSecondLanguage);
+            Connection connection = Jsoup.connect("https://" + AnkiHelperApp.language.getWiktionaryLanguageCode() + ".wiktionary.org/wiki/" + word);
+            AnkiHelperApp.language.getInformationFromWiktionary(mContext, connection.get(), isFirstToSecondLanguage);
         }
     }
 
@@ -128,10 +127,10 @@ public class GoogleTranslateFragment extends Fragment {
             }
         });
 
-        String first = isFirstToSecondLanguage ? "en" : AnkiHelperApplication.language.getGoogleTranslateLanguageCode();
-        String second = isFirstToSecondLanguage ? AnkiHelperApplication.language.getGoogleTranslateLanguageCode() : "en";
-        String wordToTranslate = isFirstToSecondLanguage ? AnkiHelperApplication.currentWord.firstLanguageWord.toLowerCase()
-                : AnkiHelperApplication.currentWord.secondLanguageWord;
+        String first = isFirstToSecondLanguage ? "en" : AnkiHelperApp.language.getGoogleTranslateLanguageCode();
+        String second = isFirstToSecondLanguage ? AnkiHelperApp.language.getGoogleTranslateLanguageCode() : "en";
+        String wordToTranslate = isFirstToSecondLanguage ? AnkiHelperApp.currentWord.firstLanguageWord.toLowerCase()
+                : AnkiHelperApp.currentWord.secondLanguageWord;
 
         Map<String, String> customHeaders = new HashMap<String, String>();
         customHeaders.put("accept-language", "en-US,en;q=0.9,he;q=0.8,de;q=0.7,yi;q=0.6");

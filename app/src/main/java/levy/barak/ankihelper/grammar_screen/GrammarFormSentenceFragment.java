@@ -11,7 +11,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
-import levy.barak.ankihelper.AnkiHelperApplication;
+import levy.barak.ankihelper.AnkiHelperApp;
 import levy.barak.ankihelper.R;
 import levy.barak.ankihelper.anki.Sentence;
 import levy.barak.ankihelper.vocabulary_screen.VocabularyListActivity;
@@ -41,33 +41,33 @@ public class GrammarFormSentenceFragment extends Fragment {
     }
 
     public void onGoClick(View view) {
-        AnkiHelperApplication.currentSentence = new Sentence();
-        AnkiHelperApplication.currentSentence.words = ((EditText)getActivity().findViewById(R.id.grammarSentence)).getText().toString().split(" ");
-        AnkiHelperApplication.currentSentence.isWordUsed = new boolean[AnkiHelperApplication.currentSentence.words.length];
+        AnkiHelperApp.currentSentence = new Sentence();
+        AnkiHelperApp.currentSentence.words = ((EditText)getActivity().findViewById(R.id.grammarSentence)).getText().toString().split(" ");
+        AnkiHelperApp.currentSentence.isWordUsed = new boolean[AnkiHelperApp.currentSentence.words.length];
 
-        for (int i = 0; i < AnkiHelperApplication.currentSentence.isWordUsed.length; i++) {
-            AnkiHelperApplication.currentSentence.isWordUsed[i] = true;
+        for (int i = 0; i < AnkiHelperApp.currentSentence.isWordUsed.length; i++) {
+            AnkiHelperApp.currentSentence.isWordUsed[i] = true;
         }
 
         LinearLayout layout = (LinearLayout) getActivity().findViewById(R.id.grammarButtonsLayout);
 
-        for (int i = 0; i < AnkiHelperApplication.currentSentence.words.length; i++) {
+        for (int i = 0; i < AnkiHelperApp.currentSentence.words.length; i++) {
             ToggleButton wordButton = new ToggleButton(this.getContext());
             wordButton.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            wordButton.setTextOn(AnkiHelperApplication.currentSentence.words[i]);
-            wordButton.setTextOff(AnkiHelperApplication.currentSentence.words[i]);
-            wordButton.setText(AnkiHelperApplication.currentSentence.words[i]);
+            wordButton.setTextOn(AnkiHelperApp.currentSentence.words[i]);
+            wordButton.setTextOff(AnkiHelperApp.currentSentence.words[i]);
+            wordButton.setText(AnkiHelperApp.currentSentence.words[i]);
             wordButton.setChecked(true);
             int finalI = i;
-            wordButton.setOnClickListener((v) -> AnkiHelperApplication.currentSentence.isWordUsed[finalI] = wordButton.isChecked());
+            wordButton.setOnClickListener((v) -> AnkiHelperApp.currentSentence.isWordUsed[finalI] = wordButton.isChecked());
 
             layout.addView(wordButton);
         }
     }
 
     public void onDoneClick(View view) {
-        AnkiHelperApplication.allSentences.add(AnkiHelperApplication.currentSentence);
-        AnkiHelperApplication.writeSentences();
+        AnkiHelperApp.allSentences.add(AnkiHelperApp.currentSentence);
+        AnkiHelperApp.writeSentences();
         startActivity(new Intent(this.getActivity(), VocabularyListActivity.class));
     }
 }
