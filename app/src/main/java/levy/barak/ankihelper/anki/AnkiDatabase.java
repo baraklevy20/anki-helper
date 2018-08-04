@@ -32,12 +32,12 @@ public class AnkiDatabase {
     private SQLiteDatabase db;
     private Context context;
 
-    // Debug
-    private long deckId = 1508871866835L;
+    private String deckName;
+    private static final long DECK_ID = 1234567890;
 
-    public AnkiDatabase(Context context, boolean isDebug) {
+    public AnkiDatabase(Context context, String deckName) {
         this.context = context;
-        this.deckId = isDebug ? 123456789L : 1508871866835L;
+        this.deckName = deckName;
     }
 
     public void generateDatabase() {
@@ -63,7 +63,7 @@ public class AnkiDatabase {
     public String getInsertCollectionSql() {
         String conf = FileUtils.getFileContent(context, "dbCollectionConfiguration.json", "").replace("\'", "\'\'");
         String models = FileUtils.getFileContent(context, "dbCollectionModels.json", "").replace("\'", "\'\'");
-        String decks = FileUtils.getFileContent(context, "dbCollectionDecks.json", "").replace("\'", "\'\'");
+        String decks = FileUtils.getFileContent(context, "dbCollectionDecks.json", "").replace("$(deckName)", deckName).replace("\'", "\'\'");
         String dconf = FileUtils.getFileContent(context, "dbCollectionDecksConfigurations.json", "").replace("\'", "\'\'");
 
         return FileUtils.getFileContent(context, "dbInsertCollection.sql")
@@ -77,7 +77,7 @@ public class AnkiDatabase {
         db.execSQL(String.format("INSERT into cards VALUES ('%d', '%d', '%d', '%d', '%d', '-1','0','0','484332854','0','0','0','0','0','0','0','0','')",
                 (long)(Math.random() * Long.MAX_VALUE),
                 noteId,
-                deckId,
+                DECK_ID,
                 order,
                 System.currentTimeMillis() / 1000
         ));
@@ -100,7 +100,7 @@ public class AnkiDatabase {
         db.execSQL(String.format("INSERT into cards VALUES ('%d', '%d', '%d', '%d', '%d', '-1','0','0','484332854','0','0','0','0','0','0','0','0','')",
                 (long)(Math.random() * Long.MAX_VALUE),
                 noteId,
-                deckId,
+                DECK_ID,
                 order,
                 System.currentTimeMillis() / 1000
         ));

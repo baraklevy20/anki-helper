@@ -2,11 +2,18 @@ package levy.barak.ankihelper;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import levy.barak.ankihelper.anki.Sentence;
 import levy.barak.ankihelper.anki.Word;
@@ -32,11 +39,39 @@ public class AnkiHelperApplication extends Application {
 
     public static Language language;
 
+    public static HashMap<String, Long> decks;
+
     @Override
     public void onCreate() {
         super.onCreate();
         this.prefs = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         language = new GermanLanguage();
+        decks = getDecks();
+    }
+
+    private static HashMap<String, Long> getDecks() {
+        try {
+            // Get all the available decks
+            String path = Environment.getExternalStorageDirectory() + "/AnkiDroid/collection.anki2";
+            SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(path, null, null);
+
+            // Get the decks
+            String decksString = db.compileStatement("select decks from col").simpleQueryForString();
+
+            HashMap<String, Long> decks = new HashMap<>();
+            JSONObject decksJson = new JSONObject(decksString);
+            Iterator<String> ids = decksJson.keys();
+            while(ids.hasNext()) {
+                String id = ids.next();
+                decks.put(decksJson.getJSONObject(id).getString("name"), Long.parseLong(id));
+            }
+
+            return decks;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public static void writeWords() {

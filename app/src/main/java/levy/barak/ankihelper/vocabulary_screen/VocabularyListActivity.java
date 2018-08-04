@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -21,10 +22,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import org.json.JSONObject;
 
 import java.io.File;
 
@@ -90,6 +95,14 @@ public class VocabularyListActivity extends Activity {
             findViewById(R.id.generateCardsButton).setEnabled(false);
             findViewById(R.id.clearButton).setEnabled(false);
         }
+
+        // Populate the decks spinner
+        String[] arraySpinner = AnkiHelperApplication.decks.keySet().toArray(new String[AnkiHelperApplication.decks.keySet().size()]);
+        Spinner s = (Spinner) findViewById(R.id.ankiDecksSpinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, arraySpinner);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        s.setAdapter(adapter);
     }
 
     public void onFirstToSecondClick(View view) {
@@ -123,9 +136,9 @@ public class VocabularyListActivity extends Activity {
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
         builder.setMessage("Are you sure you want to generate the cards? This would remove the cards and generate a ZIP for Anki.")
                 .setPositiveButton("Yes", (dialog, which) -> {
-            boolean isDebug = ((ToggleButton)findViewById(R.id.debugButton)).isChecked();
-
-            AnkiDatabase ankiDatabase = new AnkiDatabase(this, isDebug);
+            String selectedDeck = ((Spinner)findViewById(R.id.ankiDecksSpinner)).getSelectedItem().toString();
+            long selectedId = AnkiHelperApplication.decks.get(selectedDeck);
+            AnkiDatabase ankiDatabase = new AnkiDatabase(this, selectedDeck);
 
             ankiDatabase.generateDatabase();
 
