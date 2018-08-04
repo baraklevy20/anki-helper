@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -22,14 +21,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
-import android.widget.ToggleButton;
-
-import org.json.JSONObject;
 
 import java.io.File;
 
@@ -98,11 +95,25 @@ public class VocabularyListActivity extends Activity {
 
         // Populate the decks spinner
         String[] arraySpinner = AnkiHelperApplication.decks.keySet().toArray(new String[AnkiHelperApplication.decks.keySet().size()]);
-        Spinner s = (Spinner) findViewById(R.id.ankiDecksSpinner);
+        Spinner decksSpinner = (Spinner) findViewById(R.id.ankiDecksSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, arraySpinner);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        s.setAdapter(adapter);
+        decksSpinner.setAdapter(adapter);
+
+        // Set the value of the spinner to the last selected deck
+        decksSpinner.setSelection(adapter.getPosition(AnkiHelperApplication.lastUsedDeck));
+        decksSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                AnkiHelperApplication.saveLastUsedDeck((String) decksSpinner.getSelectedItem());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     public void onFirstToSecondClick(View view) {
@@ -137,7 +148,7 @@ public class VocabularyListActivity extends Activity {
         builder.setMessage("Are you sure you want to generate the cards? This would remove the cards and generate a ZIP for Anki.")
                 .setPositiveButton("Yes", (dialog, which) -> {
             String selectedDeck = ((Spinner)findViewById(R.id.ankiDecksSpinner)).getSelectedItem().toString();
-            long selectedId = AnkiHelperApplication.decks.get(selectedDeck);
+            //long selectedId = AnkiHelperApplication.decks.get(selectedDeck);
             AnkiDatabase ankiDatabase = new AnkiDatabase(this, selectedDeck);
 
             ankiDatabase.generateDatabase();

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.TreeMap;
 
 import levy.barak.ankihelper.anki.Sentence;
 import levy.barak.ankihelper.anki.Word;
@@ -39,17 +40,24 @@ public class AnkiHelperApplication extends Application {
 
     public static Language language;
 
-    public static HashMap<String, Long> decks;
+    public static TreeMap<String, Long> decks;
+
+    public static String lastUsedDeck;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        this.prefs = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+        prefs = getSharedPreferences(PREFERENCES, MODE_PRIVATE);
         language = new GermanLanguage();
         decks = getDecks();
+        lastUsedDeck = prefs.getString("LastUsedDeck", decks.firstKey());
     }
 
-    private static HashMap<String, Long> getDecks() {
+    public static void saveLastUsedDeck(String lastUsedDeck) {
+        prefs.edit().putString("LastUsedDeck", lastUsedDeck).apply();
+    }
+
+    private static TreeMap<String, Long> getDecks() {
         try {
             // Get all the available decks
             String path = Environment.getExternalStorageDirectory() + "/AnkiDroid/collection.anki2";
@@ -58,7 +66,7 @@ public class AnkiHelperApplication extends Application {
             // Get the decks
             String decksString = db.compileStatement("select decks from col").simpleQueryForString();
 
-            HashMap<String, Long> decks = new HashMap<>();
+            TreeMap<String, Long> decks = new TreeMap<>();
             JSONObject decksJson = new JSONObject(decksString);
             Iterator<String> ids = decksJson.keys();
             while(ids.hasNext()) {
