@@ -47,6 +47,15 @@ public class GoogleImagesFragment extends Fragment {
         }
 
         @JavascriptInterface
+        public void clearCache() {
+            mContext.getActivity().runOnUiThread(() -> {
+                WebView googleImagesWebView = (WebView) mContext.getActivity().findViewById(R.id.googleImagesWebView);
+                googleImagesWebView.clearCache(true);
+                googleImagesWebView.reload();
+            });
+        }
+
+        @JavascriptInterface
         public void catchHref(String imageUrl) {
             // No support for vector graphics
             if (imageUrl.endsWith("svg")) {
@@ -81,30 +90,46 @@ public class GoogleImagesFragment extends Fragment {
         WebSettings settings = googleImagesWebView.getSettings();
         settings.setJavaScriptEnabled(true);
 
-        // Must clear the cache every time we start the screen
-        // For some reason, the JS part doesn't work properly without it
-        googleImagesWebView.clearCache(true);
-
         googleImagesWebView.setWebViewClient(new WebViewClient() {
-            int resourcesLoaded;
+            boolean isMainPageLoaded;
+            boolean isScriptInjected;
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                resourcesLoaded = 0; // This is here because if the user searches for another image, we want to reset the resources loaded count
+                // We can only inject the Javascript script if the main page was already loaded
+                isMainPageLoaded = false;
+                isScriptInjected = false;
+
+                // Must clear the cache every time we start the screen
+                // For some reason, the JS part doesn't work properly without it
+                googleImagesWebView.clearCache(true);
+
+                Log.d("google_images_url", "***RESET***");
             }
 
             @Override
             public void onLoadResource(WebView view, String url) {
                 super.onLoadResource(view, url);
 
-                Log.d("google_images_url", url + "\t" + resourcesLoaded);
-                // We only attach the script AFTER we load the first resource which is the main URL
-                if (resourcesLoaded == 1) {
-                    googleImagesWebView.evaluateJavascript(FileUtils.getFileContent(googleImagesWebView.getContext(), "googleImages.js"), null);
+                //Log.d("google_images_url_load", url);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+
+                Log.d("google_images_url", url);
+
+                if (url.contains("/search?")) {
+                    isMainPageLoaded = true;
                 }
 
-                resourcesLoaded++;
+                // We only attach the script AFTER we load the main URL
+                if (isMainPageLoaded && !isScriptInjected) {
+                    googleImagesWebView.evaluateJavascript(FileUtils.getFileContent(googleImagesWebView.getContext(), "googleImages.js"), null);
+                    isScriptInjected = true; // this avoids injecting multiple times (for each loaded url)
+                }
             }
         });
 

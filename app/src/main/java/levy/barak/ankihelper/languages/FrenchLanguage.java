@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
 import levy.barak.ankihelper.AnkiHelperApp;
@@ -49,22 +50,35 @@ public class FrenchLanguage extends Language {
     @Override
     public void getInformationFromWiktionary(Fragment fragment, Document doc, boolean isFirstToSecondLanguage) {
         // Get the IPA
-        Elements ipas = doc.select(".API");
+        Element currentElement = doc.selectFirst(".titredef").parent().parent();
+        while (currentElement != null && currentElement.selectFirst(".API") == null) {
+            currentElement = currentElement.nextElementSibling();
+        }
 
-        if (ipas.size() == 0) {
+        if (currentElement == null) {
             fragment.getActivity().runOnUiThread(() -> Toast.makeText(fragment.getActivity(), "Couldn't find an IPA. Wrong word perhaps?", Toast.LENGTH_LONG).show());
             return;
         }
 
-        String ipa = ipas.first().text();
+        Element ipaElement = currentElement.selectFirst(".API");
+
+        if (ipaElement == null) {
+            fragment.getActivity().runOnUiThread(() -> Toast.makeText(fragment.getActivity(), "Couldn't find an IPA. Wrong word perhaps?", Toast.LENGTH_LONG).show());
+            return;
+        }
+
+        String ipa = ipaElement.text();
         // Remove \ and \ that surround the ipa
         ipa = ipa.substring(1, ipa.length() - 1);
         AnkiHelperApp.currentWord.ipa = ipa;
 
         // Get the example sentences
-        Element differentDefinitionsElement = doc.select("ol").first();
+        while (currentElement != null && !currentElement.tagName().equals("ol")) {
+            currentElement = currentElement.nextElementSibling();
+        }
+
         AnkiHelperApp.currentWord.exampleSentences = "<ul>";
-        for (Element definitionElement : differentDefinitionsElement.children()) {
+        for (Element definitionElement : currentElement.children()) {
             Element sentencesPerDefinition = definitionElement.select("ul").first();
 
             if (sentencesPerDefinition != null) {
@@ -80,16 +94,26 @@ public class FrenchLanguage extends Language {
         // If the word category is null
         // If we're translating from French to English
         // If it's a noun with one word that doesn't start with l' (no definite article)
-        if (!isFirstToSecondLanguage && AnkiHelperApp.currentWord.wordCategory == Word.WordCategory.NOUN ||
-                isFirstToSecondLanguage && (AnkiHelperApp.currentWord.wordCategory == null ||
-                AnkiHelperApp.currentWord.wordCategory == Word.WordCategory.NOUN &&
-                AnkiHelperApp.currentWord.secondLanguageWord.split(" ").length == 1 &&
-                !AnkiHelperApp.currentWord.secondLanguageWord.startsWith("l'"))) {
+        if (isFirstToSecondLanguage || AnkiHelperApp.currentWord.wordCategory == Word.WordCategory.NOUN) {
+            if (AnkiHelperApp.currentWord.secondLanguageWord.contains(" ")) {
+                AnkiHelperApp.currentWord.secondLanguageWord =
+                    AnkiHelperApp.currentWord.secondLanguageWord.substring(AnkiHelperApp.currentWord.secondLanguageWord.indexOf(' ') + 1);
+            }
             String gender = doc.select(".ligne-de-forme").first().text();
 
             String article = gender.startsWith("masculin") ? "le" : "la";
             AnkiHelperApp.currentWord.secondLanguageWord = article + " " + AnkiHelperApp.currentWord.secondLanguageWord;
         }
+//        if (!isFirstToSecondLanguage && AnkiHelperApp.currentWord.wordCategory == Word.WordCategory.NOUN ||
+//                isFirstToSecondLanguage && (AnkiHelperApp.currentWord.wordCategory == null ||
+//                AnkiHelperApp.currentWord.wordCategory == Word.WordCategory.NOUN &&
+//                AnkiHelperApp.currentWord.secondLanguageWord.split(" ").length == 1 &&
+//                !AnkiHelperApp.currentWord.secondLanguageWord.startsWith("l'"))) {
+//            String gender = doc.select(".ligne-de-forme").first().text();
+//
+//            String article = gender.startsWith("masculin") ? "le" : "la";
+//            AnkiHelperApp.currentWord.secondLanguageWord = article + " " + AnkiHelperApp.currentWord.secondLanguageWord;
+//        }
 
         // If it's a noun, get it's plural form as well
         if (AnkiHelperApp.currentWord.wordCategory == Word.WordCategory.NOUN) {
